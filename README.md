@@ -25,7 +25,7 @@ The intended workflow is:
 - The archive contains text files, including `TDCData.txt` and `TDCData_investment.txt`. The main text file is large, so inspect it before loading it into memory.
 - Research paper: https://doi.org/10.1002/net.22188
 
-The paper describes the TDC Net instance as containing 720 workday technicians, 2,677 tasks, 31 skills and a five-day horizon. These are paper-reported instance facts; our next step is to verify how the downloaded files encode the data.
+The paper reports 2,677 tasks and a five-day planning horizon for the TDC Net instance. The raw file scan shows 1,430 technician records; do not assume these rows equal 1,430 distinct people, because records may represent technician-day availability. We will preserve the source IDs and validate this interpretation against the paper before drawing conclusions.
 
 Download the data from Zenodo yourself and store it under `data/raw/`. Do not commit the large raw dataset to GitHub. Keep the downloaded originals unchanged, and document any preprocessing steps.
 
@@ -101,6 +101,21 @@ python src/preview_tdc_records.py
 ```
 
 This prints three technician examples, three task examples and eight travel-time entries from the ZIP without extracting the 366 MB file. The output will help us define and validate the parser. Do not treat the travel-time values as minutes until the source documentation confirms their units.
+
+## Parse technician and task records
+
+After reviewing the sample records, run from the repository root:
+
+```powershell
+python src/parse_tdc_records.py
+```
+
+The parser streams the ZIP and writes local outputs to:
+
+- `data/processed/technicians.csv`
+- `data/processed/tasks.csv`
+
+It validates record formats and duplicate IDs. If a row does not match, it reports the first parsing issues and deliberately does not write partial CSV files. Travel-time rows are not expanded in this step because that section contains nearly 14.8 million entries. The raw ZIP and generated processed files are excluded from Git.
 
 ## Evaluation plan
 
