@@ -4,13 +4,13 @@
 
 ## Project objective
 
-Investigate how machine learning and technician scheduling can help a plumbing service chain make better operational decisions. The project will use publicly available field-service technician-routing data as a starting point, subject to dataset validation.
+Investigate how machine learning and technician scheduling can help a plumbing service chain make better operational decisions. The project uses publicly available field-service technician-routing data as a starting point, subject to dataset validation.
 
 The intended workflow is:
 
 1. Validate and document an open dataset.
 2. Explore technician, task, skill, location, duration, and scheduling fields available in the data.
-3. Build a defensible baseline for technician assignment or routing.
+3. Build a clear baseline for technician assignment or routing.
 4. Investigate whether the data supports a useful ML prediction task.
 5. Compare approaches using measurable metrics and explain the business implications.
 
@@ -21,8 +21,11 @@ The intended workflow is:
 **Candidate source:** Gamst, M. and Pisinger, D., *Decision Support for the Technician Routing and Scheduling Problem* (Zenodo).
 
 - Record: https://zenodo.org/records/7904015
-- Candidate file for initial inspection: `TDCData_instance.zip`
-- Other record files will be considered only if needed.
+- Initial archive: `TDCData_instance.zip`
+- The archive contains text files, including `TDCData.txt` and `TDCData_investment.txt`. The main text file is large, so inspect it before loading it into memory.
+- Research paper: https://doi.org/10.1002/net.22188
+
+The paper describes the TDC Net instance as containing 720 workday technicians, 2,677 tasks, 31 skills and a five-day horizon. These are paper-reported instance facts; our next step is to verify how the downloaded files encode the data.
 
 Download the data from Zenodo yourself and store it under `data/raw/`. Do not commit the large raw dataset to GitHub. Keep the downloaded originals unchanged, and document any preprocessing steps.
 
@@ -35,7 +38,11 @@ Download the data from Zenodo yourself and store it under `data/raw/`. Do not co
 - An optimization library if needed for technician scheduling
 - VS Code and Google Colab
 
-Exact dependencies will be recorded in `requirements.txt` once the first implementation is defined.
+Install the initial dependencies using:
+
+```powershell
+python -m pip install -r requirements.txt
+```
 
 ## Planned repository structure
 
@@ -45,8 +52,9 @@ plumbing-ml-optimization/
 │   ├── raw/              # Downloaded source data (not committed)
 │   └── processed/        # Generated / cleaned data (not committed)
 ├── notebooks/
-│   └── 01_dataset_analysis.ipynb
 ├── src/
+│   ├── inspect_dataset_zip.py
+│   └── inspect_tdc_text.py
 ├── results/
 │   └── figures/
 ├── report/
@@ -55,29 +63,36 @@ plumbing-ml-optimization/
 └── README.md
 ```
 
-## Getting started
+## Dataset validation: current step
 
-The first milestone is dataset validation, not model training.
+The archive inspection has confirmed that the ZIP is readable and contains two text members:
 
-1. Download `TDCData_instance.zip` from the Zenodo record above.
-2. Put it in `data/raw/`.
-3. Inspect the ZIP contents and file formats.
-4. Record the file list, fields, units, missing values, and any constraints.
-5. Decide which research question is actually supported by the data.
+- `TDCData.txt` (approximately 366.5 MB uncompressed)
+- `TDCData_investment.txt` (approximately 1.3 KB uncompressed)
 
-Once the structure is verified, setup commands and reproducible analysis instructions will be added here.
+These are text files, not CSV/Excel files; that is expected. Do not assume a delimiter or load the main file with pandas until the file structure has been inspected.
+
+Run from the repository root:
+
+```powershell
+python src/inspect_dataset_zip.py
+python src/inspect_tdc_text.py
+```
+
+The second script previews a small number of lines directly from the ZIP without extracting the 366 MB text file. Review the sample to determine the encoding, field separators, headers and record structure before writing a parser.
 
 ## Evaluation plan
 
-The final evaluation will depend on the validated data and selected research question. Possible scheduling measures include travel time, waiting / lateness, workload balance, or unassigned tasks. If a prediction task is supported, an appropriate held-out evaluation metric will also be reported. We will compare against a clearly defined baseline and explain the results with plots and written interpretation.
+The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
 
 ## Academic deliverables
 
-The course submission requires a project report, presentation, code, openly available data-source links, and a help file. The report should include each member's contribution and relevant page numbers on its first page, explain every result visualization, and end with evidence-based recommendations. Code and code screenshots should be kept out of the report.
+The course submission requires a project report, presentation, code, openly available data-source links and a help file. The report should include each member's contribution and relevant page numbers on its first page, explain every result visualization and end with evidence-based recommendations. Code and code screenshots should be kept out of the report.
 
 ## Research source
 
-Gamst, M. and Pisinger, D. *Decision Support for the Technician Routing and Scheduling Problem*. Dataset and results: https://zenodo.org/records/7904015
+Gamst, M. and Pisinger, D. *Decision Support for the Technician Routing and Scheduling Problem*. Networks, 83(1), 169–196. https://doi.org/10.1002/net.22188  
+Dataset and results: https://zenodo.org/records/7904015
 
 ## Team
 
