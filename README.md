@@ -421,6 +421,35 @@ This is an important negative result for the current duration-estimation approac
 
 The current project has now demonstrated (1) a validated routing/scheduling data pipeline, (2) two validated scheduling heuristics, (3) a reproducible method comparison, (4) exploratory cancellation classification that degrades sharply on chronological testing, and (5) duration regression with chronological testing and scheduling-impact analysis. Before finalizing, the next priority is to decide whether to improve the optimization algorithm as the main contribution and retain ML results as an exploratory component, or to identify better field-service data with a defensible target for prediction.
 
+## Calibrated duration predictions and scheduling impact
+
+The initial Ridge model underpredicted duration for the longest jobs and did not improve the schedule in the prior counterfactual. We are testing a conservative one-sided calibration approach rather than assuming raw point predictions are safe for scheduling.
+
+Run the model calibration experiment:
+
+```powershell
+git pull origin main
+python -m py_compile src/train_calibrated_duration_model.py
+python src/train_calibrated_duration_model.py
+```
+
+This uses the oldest 60% of tasks to fit Ridge, the next 20% to estimate a one-sided residual buffer at the 90th percentile, and the newest 20% as a final test set. The buffer is nonnegative and is added to raw test predictions, rounded upward to whole minutes.
+
+Then evaluate the resulting route plan against the insertion baseline:
+
+```powershell
+python -m py_compile src/evaluate_calibrated_duration_scheduling_impact.py
+python src/evaluate_calibrated_duration_scheduling_impact.py
+```
+
+The calibrated scheduling outputs use separate filenames and do not overwrite the previous raw-Ridge counterfactual:
+- `data/processed/calibrated_duration_estimate_task_status.csv`
+- `data/processed/calibrated_duration_estimate_routes.csv`
+- `results/calibrated_duration_scheduling_impact.json`
+- `results/calibrated_duration_scheduling_impact_comparison.csv`
+
+Calibration is intended to reduce underprediction, not to guarantee feasibility. A larger buffer can increase scheduling reliability but also cause more tasks to be considered infeasible. We will compare held-out coverage, travel time, and replay violations to see whether the trade-off is justified.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
