@@ -283,6 +283,32 @@ python src/train_cancellation_model.py
 
 Limitations: this is a single random/stratified split on a small, static telecommunications service dataset. It is not a future-time evaluation, and the availability of the final task fields at the intended prediction time remains unproven. Treat the numbers as exploratory, not as evidence of production or plumbing-company cancellation prediction.
 
+## Updated random-holdout cancellation model results
+
+After scaling the sparse feature matrix, Logistic Regression completed without a convergence warning in the latest run. The results below are from a stratified random 80/20 hold-out (2,141 train rows, 536 test rows):
+
+| Model | Accuracy | Balanced accuracy | Cancellation precision | Cancellation recall | Cancellation F1 | ROC-AUC |
+|---|---:|---:|---:|---:|---:|---:|
+| Majority baseline | 0.8340 | 0.5000 | 0.0000 | 0.0000 | 0.0000 | 0.5000 |
+| Logistic regression (scaled) | 0.6959 | 0.6917 | 0.3112 | 0.6854 | 0.4281 | 0.7138 |
+| Random forest | 0.8451 | 0.6732 | 0.5441 | 0.4157 | 0.4713 | 0.7540 |
+
+The random forest has the stronger F1 and ROC-AUC in this split; logistic regression catches more cancellations but produces more false positives. The majority baseline predicts every task as not cancelled, so its accuracy is not useful as a cancellation-detection score.
+
+These remain exploratory numbers. The random hold-out can mix older and newer task records, and the dataset is a static telecommunications instance rather than a plumbing-company dataset. The `modified` field and `task_id` remain excluded due to target-leakage and identity concerns.
+
+### Next evaluation: chronological hold-out
+
+To test whether results hold when predicting tasks created later than the training examples, run:
+
+```powershell
+git pull origin main
+python -m py_compile src/train_cancellation_model_temporal.py
+python src/train_cancellation_model_temporal.py
+```
+
+The temporal experiment sorts tasks by `created`, trains on the older 80%, and tests on the newest 20%. It keeps the `modified` timestamp and `task_id` out of the features. This is a stricter exploratory test, but not proof of production performance: target timing and the availability of features at the actual decision point still need to be justified.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
