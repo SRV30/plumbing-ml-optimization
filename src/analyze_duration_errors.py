@@ -42,18 +42,27 @@ def main() -> None:
     predictions = pd.read_csv(PREDICTIONS_PATH)
     actual = tasks[["task_id", "duration"]].copy()
     actual["task_id"] = actual["task_id"].astype(int)
-    actual["actual_duration_minutes"] = pd.to_numeric(actual["duration"], errors="raise")
-    actual = actual.drop(columns=["duration"])
+    actual["duration"] = pd.to_numeric(actual["duration"], errors="raise")
+    source_ids = set(actual["task_id"])
 
     predictions["task_id"] = predictions["task_id"].astype(int)
-    data = predictions.merge(actual, on="task_id", how="left", validate="many_to_one")
-    if data["actual_duration_minutes"].isna().any():
-        raise ValueError("Some prediction task IDs did not match source durations.")
+    missing_ids = sorted(set(predictions["task_id"]) - source_ids)
+    if missing_ids:
+        raise ValueError(f"Prediction IDs missing from task source: {missing_ids[:10]}")
 
-    if "actual_duration_minutes" in predictions.columns:
-        data["actual_duration_minutes"] = pd.to_numeric(
-            data["actual_duration_minutes"], errors="raise"
+    data = predictions.copy()
+    if "actual_duration_minutes" not in data.columns:
+        data = data.merge(
+            actual.rename(columns={"duration": "actual_duration_minutes"}),
+            on="task_id",
+            how="left",
+            validate="many_to_one",
         )
+    data["actual_duration_minutes"] = pd.to_numeric(
+        data["actual_duration_minutes"], errors="raise"
+    )
+    if data["actual_duration_minutes"].isna().any():
+        raise ValueError("Some prediction rows are missing actual durations.");
 
     data["predicted_duration_minutes"] = pd.to_numeric(
         data["predicted_duration_minutes"], errors="raise"
