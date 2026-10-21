@@ -160,7 +160,7 @@ def main() -> None:
         f"Local-search reduction vs insertion: {reduction_vs_insertion:,.2f} minutes "
         f"({(reduction_vs_insertion / insertion_travel * 100) if insertion_travel else 0.0:.2f}%)"
     )
-    print("\\nPer-method results:")
+    print("\nPer-method results:")
     for label in labels:
         item = summaries[label]
         print(
