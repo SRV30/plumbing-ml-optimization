@@ -450,7 +450,7 @@ def main() -> None:
             "no_feasible_insertion_count": infeasible_count,
             "active_task_coverage": round(assigned / active_count, 6) if active_count else 0.0,
             "routes_used": sum(bool(route) for route in technician_routes.values()),
-            "travel_minutes_using_estimated_duration_route_order".replace(" ", "_"): round(total_predicted_travel, 3),
+            "travel_minutes_using_estimated_duration_route_order": round(total_predicted_travel, 3),
             "duration_predictions_mae_minutes_on_holdout": actual_duration_mae,
             "routes_with_any_violation_when_replayed_with_source_durations": routes_with_violations,
             "routes_feasible_when_replayed_with_source_durations": actual_feasible_routes,
