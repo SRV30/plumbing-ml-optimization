@@ -25,7 +25,7 @@ The intended workflow is:
 - The archive contains text files, including `TDCData.txt` and `TDCData_investment.txt`. The main text file is large, so inspect it before loading it into memory.
 - Research paper: https://doi.org/10.1002/net.22188
 
-The paper reports 2,677 tasks and a five-day planning horizon for the TDC Net instance. The raw file scan shows 1,430 technician records; do not assume these rows equal 1,430 distinct people, because records may represent technician-day availability. We will preserve the source IDs and validate this interpretation against the paper before drawing conclusions.
+The paper describes workday technicians as technician-day entities: it states that a workday technician is generated for each workday for each technician. The paper's reported instance summary gives 720 workday technicians, whereas this downloaded archive has 1,430 technician records. This discrepancy is unresolved and must be investigated rather than silently reconciled. The archive's technician time-window dates will be summarized to understand the rows before claims about technician counts are made. The paper reports 2,677 tasks, 31 skills and a five-day horizon.
 
 Download the data from Zenodo yourself and store it under `data/raw/`. Do not commit the large raw dataset to GitHub. Keep the downloaded originals unchanged, and document any preprocessing steps.
 
@@ -116,6 +116,19 @@ The parser streams the ZIP and writes local outputs to:
 - `data/processed/tasks.csv`
 
 It validates record formats and duplicate IDs. If a row does not match, it reports the first parsing issues and deliberately does not write partial CSV files. Travel-time rows are not expanded in this step because that section contains nearly 14.8 million entries. The raw ZIP and generated processed files are excluded from Git.
+
+## Data semantics investigation
+
+After running the parser and validating the CSVs, pull the latest repository and run:
+
+```powershell
+git pull origin main
+python src/investigate_dataset_semantics.py
+```
+
+This diagnostic reports technician records by time-window date, the full skill vocabulary and any skills that occur on only one side (technician skills or task requirements), all tasks with an empty relevant-technician list, and whether the referenced technician IDs exist in the technician table. It also summarizes cancellation timestamps to inform whether cancellation prediction can be designed without target leakage.
+
+The associated paper explicitly states that travel times are measured in minutes. The dataset's observed 1,430 technician rows still do not match the paper's summary of 720 workday technicians; this remains an open data-version/representation question pending the diagnostic output and further inspection.
 
 ## Evaluation plan
 
