@@ -365,6 +365,26 @@ python src/analyze_duration_errors.py
 
 This creates `results/duration_error_by_range.csv` and `results/figures/duration_mae_by_range.png`. It reports MAE/RMSE and signed error by actual duration bucket, which helps reveal systematic underprediction or overprediction for longer jobs.
 
+## Scheduling impact of estimated durations
+
+After generating the Ridge duration predictions and the source-duration insertion baseline, run:
+
+```powershell
+git pull origin main
+python -m py_compile src/evaluate_duration_scheduling_impact.py
+python src/evaluate_duration_scheduling_impact.py
+```
+
+This counterfactual experiment substitutes Ridge estimates (rounded upward to whole minutes) for the chronologically held-out task records, schedules using route insertion, then replays the selected route order with the source-recorded duration values to detect task-window, shift-end and return-to-depot violations. It compares the predicted-duration route plan with the previously validated plan built from source-recorded durations.
+
+Outputs:
+- `data/processed/duration_estimate_task_status.csv`
+- `data/processed/duration_estimate_routes.csv`
+- `results/duration_scheduling_impact.json`
+- `results/duration_scheduling_impact_comparison.csv`
+
+**Interpretation caveat:** the source paper defines task duration as a scheduling input. These are source-recorded reference values, not independently verified actual plumbing service times. The experiment only has operational meaning if duration is unknown at intake and the model features are known then. Label results accordingly; do not claim real-world savings from this proxy-data counterfactual.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
