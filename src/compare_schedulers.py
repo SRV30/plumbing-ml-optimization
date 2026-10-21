@@ -1,9 +1,9 @@
-"""Compare validated greedy and route-insertion scheduler summaries.
+"""Compare validated greedy, route-insertion, and local-search summaries.
 
 Run from the repository root:
     python src/compare_schedulers.py
 
-Reads the JSON summaries written by the two scheduler scripts and produces:
+Reads the three JSON summaries written by the scheduling experiments and produces:
     data/processed/scheduler_comparison.csv
     results/figures/travel_time_comparison.png
     results/figures/task_coverage_comparison.png
