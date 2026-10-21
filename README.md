@@ -257,6 +257,32 @@ It reports accuracy, balanced accuracy, cancellation precision/recall/F1, averag
 
 This is a stratified random hold-out on one static telecommunications field-service dataset. Even a high score would not by itself establish production cancellation prediction or plumbing-business performance. We must interpret cancellation labels and feature availability at the intended prediction time, compare against the majority baseline, and report limitations honestly.
 
+## Initial cancellation-model result (exploratory)
+
+The first stratified random hold-out run used 2,141 training rows and 536 test rows. The cancelled class has 444 rows overall, compared with 2,233 non-cancelled rows.
+
+Initial test metrics reported before fixing logistic-regression scaling:
+
+| Model | Accuracy | Balanced accuracy | Cancellation precision | Cancellation recall | Cancellation F1 | ROC-AUC |
+|---|---:|---:|---:|---:|---:|---:|
+| Majority baseline | 0.8340 | 0.5000 | 0.0000 | 0.0000 | 0.0000 | 0.5000 |
+| Logistic regression (not yet converged) | 0.6884 | 0.6827 | 0.3030 | 0.6742 | 0.4181 | 0.7118 |
+| Random forest | 0.8451 | 0.6732 | 0.5441 | 0.4157 | 0.4713 | 0.7540 |
+
+The initial logistic regression run emitted a convergence warning. The script has therefore been updated to scale the sparse feature matrix before fitting logistic regression, and this model must be rerun before its final metrics are reported. The random-forest result is from the original exploratory run and remains a preliminary result.
+
+The majority baseline's 83.40% accuracy comes from predicting every test case as non-cancelled; it detects no cancellations. For the class of interest, precision/recall/F1 and average precision are more informative than accuracy alone.
+
+Run the updated experiment after pulling:
+
+```powershell
+git pull origin main
+python -m py_compile src/train_cancellation_model.py
+python src/train_cancellation_model.py
+```
+
+Limitations: this is a single random/stratified split on a small, static telecommunications service dataset. It is not a future-time evaluation, and the availability of the final task fields at the intended prediction time remains unproven. Treat the numbers as exploratory, not as evidence of production or plumbing-company cancellation prediction.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
