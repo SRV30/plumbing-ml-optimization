@@ -1,0 +1,79 @@
+{
+  "experiment": "initial_cancellation_prediction",
+  "target": "cancelled (True is the positive class)",
+  "split": {
+    "method": "stratified random hold-out",
+    "test_size": 0.2,
+    "random_state": 42,
+    "train_rows": 2141,
+    "test_rows": 536
+  },
+  "class_counts_full_data": {
+    "False": 2233,
+    "True": 444
+  },
+  "features_used": [
+    "duration",
+    "priority",
+    "penalty",
+    "time-window length",
+    "window start hour and weekday",
+    "creation hour and weekday",
+    "creation-to-window-start lead time",
+    "number of required skills",
+    "number of relevant technicians",
+    "required-skill indicator features"
+  ],
+  "features_excluded_for_leakage_or_identity": [
+    "modified timestamp (strong leakage risk: observed nonblank count equals cancelled count)",
+    "task_id (record identifier, not a generalizable business feature)",
+    "cancelled itself (target)"
+  ],
+  "caveats": [
+    "Exploratory hold-out result on a single static dataset.",
+    "The source data is telecommunications field service, not plumbing-company data.",
+    "A real deployment decision time and the availability of every feature must be established before claiming predictive performance.",
+    "The hold-out is random/stratified, not a future-time deployment simulation."
+  ],
+  "models": {
+    "Majority baseline": {
+      "accuracy": 0.8339552238805971,
+      "balanced_accuracy": 0.5,
+      "cancellation_precision": 0.0,
+      "cancellation_recall": 0.0,
+      "cancellation_f1": 0.0,
+      "average_precision": 0.166044776119403,
+      "roc_auc": 0.5,
+      "true_negative": 447,
+      "false_positive": 0,
+      "false_negative": 89,
+      "true_positive": 0
+    },
+    "Logistic regression": {
+      "accuracy": 0.6958955223880597,
+      "balanced_accuracy": 0.6916899178040872,
+      "cancellation_precision": 0.3112244897959184,
+      "cancellation_recall": 0.6853932584269663,
+      "cancellation_f1": 0.4280701754385965,
+      "average_precision": 0.3603732445449326,
+      "roc_auc": 0.7138224869919312,
+      "true_negative": 312,
+      "false_positive": 135,
+      "false_negative": 28,
+      "true_positive": 61
+    },
+    "Random forest": {
+      "accuracy": 0.8451492537313433,
+      "balanced_accuracy": 0.6731895533267979,
+      "cancellation_precision": 0.5441176470588235,
+      "cancellation_recall": 0.4157303370786517,
+      "cancellation_f1": 0.4713375796178344,
+      "average_precision": 0.4468220401320359,
+      "roc_auc": 0.7539652615438754,
+      "true_negative": 416,
+      "false_positive": 31,
+      "false_negative": 52,
+      "true_positive": 37
+    }
+  }
+}
