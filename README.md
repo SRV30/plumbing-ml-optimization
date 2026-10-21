@@ -565,7 +565,9 @@ Group 5 — add all five members' names and enrollment numbers here once confirm
 
 ## Interactive dashboard
 
-The Streamlit dashboard presents the saved results of the three scheduling methods, plots, an optional local-search route explorer, and the current ML limitations. It reads generated files from `data/processed/` and `results/figures/`; it does not rerun the scheduling algorithms.
+The Streamlit dashboard presents the three scheduling methods, plots, an optional local-search route explorer, and the current ML limitations. It prefers local scheduler summaries under `data/processed/`. If these generated files are absent (for example, in a fresh Git clone), the app uses `results/scheduler_demo_summary.json` for a clearly labelled aggregate overview. That fallback does not include individual routes or tasks, so the Route Explorer needs the locally generated schedule CSVs.
+
+The ML panel reads the tracked chronological metrics in `results/duration_temporal_metrics.json` and `results/cancellation_temporal_metrics.json`, rather than hard-coding those values in the app. The dashboard never launches a scheduler automatically.
 
 After pulling the latest repository, from the project root in the terminal with your virtual environment active, install the added dependency and start the dashboard:
 
@@ -578,4 +580,4 @@ streamlit run app.py
 
 A browser tab should open with the dashboard. To stop the server, press `Ctrl+C` in the terminal. If the browser does not open automatically, use the local URL printed by Streamlit, usually `http://localhost:8501`.
 
-The dashboard relies on local result files that are excluded from Git. If the summary JSON files are missing, regenerate them using the existing scheduling workflow and validate each schedule before citing its numbers. Do **not** run the longer relocation search just to populate the dashboard; use the already-validated 100-move local-search result. The app clearly labels the telecommunications-data limitation and does not claim that the ML models have improved scheduling.
+The app clearly labels the telecommunications-data limitation and does not claim that the ML models have improved scheduling. The aggregate demo summary is not a replacement for the original source data, local route outputs, validation, or rerunning the analysis from source.
