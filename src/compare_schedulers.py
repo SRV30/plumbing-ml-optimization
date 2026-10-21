@@ -140,14 +140,26 @@ def main() -> None:
 
     greedy_travel = travel_values[0]
     insertion_travel = travel_values[1]
-    reduction = greedy_travel - insertion_travel
-    reduction_pct = (reduction / greedy_travel * 100) if greedy_travel else 0.0
+    local_search_travel = travel_values[2]
+    reduction_vs_insertion = insertion_travel - local_search_travel
+    reduction_vs_greedy = greedy_travel - local_search_travel
+    reduction_vs_greedy_pct = (
+        reduction_vs_greedy / greedy_travel * 100 if greedy_travel else 0.0
+    )
 
     print("SCHEDULER COMPARISON")
     print("====================")
-    print(f"Greedy travel time:    {greedy_travel:,.2f} minutes")
-    print(f"Insertion travel time: {insertion_travel:,.2f} minutes")
-    print(f"Travel-time reduction: {reduction:,.2f} minutes ({reduction_pct:.2f}%)")
+    print(f"Greedy travel time:       {greedy_travel:,.2f} minutes")
+    print(f"Insertion travel time:    {insertion_travel:,.2f} minutes")
+    print(f"Local-search travel time: {local_search_travel:,.2f} minutes")
+    print(
+        f"Local-search reduction vs greedy: {reduction_vs_greedy:,.2f} minutes "
+        f"({reduction_vs_greedy_pct:.2f}%)"
+    )
+    print(
+        f"Local-search reduction vs insertion: {reduction_vs_insertion:,.2f} minutes "
+        f"({(reduction_vs_insertion / insertion_travel * 100) if insertion_travel else 0.0:.2f}%)"
+    )
     print("\\nPer-method results:")
     for label in labels:
         item = summaries[label]
