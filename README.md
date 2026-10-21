@@ -184,6 +184,26 @@ Outputs (local, Git-ignored):
 
 This is a deterministic, append-only greedy heuristic. It is not an ML model and not guaranteed to be optimal. Unassigned tasks must be interpreted as tasks this particular heuristic could not schedule under its rules, not proof that no feasible schedule exists. The baseline results are a reference point for later comparisons.
 
+## Validate baseline scheduler output
+
+After building the travel matrices and running the scheduler, validate the generated assignments:
+
+```powershell
+python -m py_compile src/validate_greedy_schedule.py
+python src/validate_greedy_schedule.py
+```
+
+The validator checks that:
+- every source task has exactly one status row;
+- tasks marked cancelled are excluded and assigned tasks are not marked cancelled;
+- assigned tasks use a technician listed in the source task's eligible-technician list;
+- assigned route rows correspond exactly to tasks marked assigned;
+- route sequence numbers, inbound travel values, service durations and time windows are consistent;
+- technician shifts and final return travel are respected; and
+- summary counts match the output tables.
+
+A passing result validates internal consistency and the constraints included in the validator; it does not prove global optimality or that the heuristic finds every feasible assignment.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
