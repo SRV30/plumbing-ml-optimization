@@ -38,7 +38,8 @@ TASK_RE = re.compile(
     r'created\s+(?P<created>[^,]+),\s*'
     r'modified\s+(?P<modified>[^,]+),\s*'
     r'cancelled\s+(?P<cancelled>true|false),\s*'
-    r'relevant\s*technician\s*ids\s+(?:Int64\s*)?(?P<technicians>\[.*\])\s*    re.IGNORECASE,
+    r'relevant\s*technician\s*ids\s+(?:Int64\s*)?(?P<technicians>\[.*\])\s*$',
+    re.IGNORECASE,
 )
 
 TECHNICIAN_FIELDS = [
