@@ -309,6 +309,32 @@ python src/train_cancellation_model_temporal.py
 
 The temporal experiment sorts tasks by `created`, trains on the older 80%, and tests on the newest 20%. It keeps the `modified` timestamp and `task_id` out of the features. This is a stricter exploratory test, but not proof of production performance: target timing and the availability of features at the actual decision point still need to be justified.
 
+## Chronological cancellation result and model decision
+
+The chronological hold-out sorted task records by `created`, trained on the older 80%, and tested on the newest 20% (2,141 training rows; 536 test rows). The test set contained 82 cancelled tasks.
+
+| Model | Accuracy | Balanced accuracy | Cancellation precision | Cancellation recall | Cancellation F1 | ROC-AUC |
+|---|---:|---:|---:|---:|---:|---:|
+| Majority baseline | 0.8470 | 0.5000 | 0.0000 | 0.0000 | 0.0000 | 0.5000 |
+| Logistic regression | 0.4832 | 0.5201 | 0.1626 | 0.5732 | 0.2534 | 0.5227 |
+| Random forest | 0.8470 | 0.5050 | 0.5000 | 0.0122 | 0.0238 | 0.6036 |
+
+At the default threshold, Random Forest identified only 1 of 82 cancelled test tasks. Accuracy matches the majority baseline, which identifies no cancellations. This makes cancellation prediction too weak to present as the primary ML result at this stage. Keep the experiment as a negative finding, and investigate an alternative target rather than claiming cancellation-risk prediction is reliable.
+
+## Chronological task-duration prediction
+
+The recorded task `duration` is a candidate regression target. Run:
+
+```powershell
+git pull origin main
+python -m py_compile src/train_duration_model_temporal.py
+python src/train_duration_model_temporal.py
+```
+
+The script sorts tasks by their creation timestamp, trains on the older 80%, and tests on the newest 20%. It compares a training-set median baseline, Ridge regression and Random Forest regression. It reports MAE, RMSE, median absolute error and R-squared, and creates a comparison plot.
+
+The script excludes the task ID, cancellation outcome and `modified` timestamp from its features. However, before interpreting results for a real business, confirm whether the source `duration` represents an estimate known before service or realized duration, and whether window/eligibility information is available at prediction time. The dataset represents telecommunications field service, not plumbing; even strong metrics would remain a proxy-data result.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
