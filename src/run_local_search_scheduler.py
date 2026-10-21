@@ -40,7 +40,8 @@ STATUS_PATH = DATA / "local_search_task_status.csv"
 ROUTES_PATH = DATA / "local_search_routes.csv"
 SUMMARY_PATH = DATA / "local_search_summary.json"
 
-MAX_ACCEPTED_MOVES = 300
+# Keep the search bounded: the first 100-move run produced a validated improvement.
+MAX_ACCEPTED_MOVES = 100
 IMPROVEMENT_EPSILON = 1e-6
 
 STATUS_FIELDS = [
