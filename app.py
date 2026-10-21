@@ -26,9 +26,11 @@ st.title("Field-Service Scheduling Optimizer")
 st.caption("Offline dashboard for the three scheduling experiments in this project.")
 
 st.warning(
-    "Dataset limitation: these experiments use telecommunications field-service data, "
-    "not real plumbing-company records. The results are a research prototype and are "
-    "not evidence of actual savings for a plumbing business.",
+    "Dataset limitations: these experiments use telecommunications field-service data, "
+    "not real plumbing-company records. The parsed Zenodo archive has 1,430 workday-level "
+    "technician rows and 32 observed skill labels, while the paper reports 720 workday "
+    "technicians and 31 skills; this discrepancy remains unresolved. Results are a research "
+    "prototype, not evidence of actual savings for a plumbing business.",
     icon="⚠️",
 )
 
