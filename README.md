@@ -204,6 +204,26 @@ The validator checks that:
 
 A passing result validates internal consistency and the constraints included in the validator; it does not prove global optimality or that the heuristic finds every feasible assignment.
 
+## Route-insertion scheduling experiment
+
+After the greedy baseline has been generated and validated, run the alternative route-insertion heuristic:
+
+```powershell
+python -m py_compile src/run_insertion_scheduler.py
+python src/run_insertion_scheduler.py
+python -m py_compile src/validate_insertion_schedule.py
+python src/validate_insertion_schedule.py
+```
+
+The insertion heuristic tries placing each eligible, non-cancelled task at different positions within a candidate technician-day route. It keeps an insertion only if the full route remains feasible and selects the feasible option with the lowest marginal travel time. This is a different heuristic, not an exact optimizer and not a Machine Learning model.
+
+The insertion output has separate files so it will not overwrite the greedy baseline:
+- `data/processed/insertion_task_status.csv`
+- `data/processed/insertion_routes.csv`
+- `data/processed/insertion_summary.json`
+
+The validator checks the generated table and recorded scheduling constraints. Compare the two methods only after the insertion run passes validation. A higher task-coverage number or lower travel time should be interpreted against the same constraint definitions; neither alone proves the method is globally optimal.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
