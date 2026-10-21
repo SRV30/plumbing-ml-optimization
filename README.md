@@ -521,7 +521,7 @@ The run accepted the full 100-move limit. This does not prove that no further im
 
 ### Extended relocation search
 
-The first run reached its 100-move limit, so it did not establish a local optimum. The configured limit is now 300 accepted moves. To rerun from the same validated route-insertion starting point and compare all three methods again:
+The first run reached its 100-move limit and produced a validated schedule at 14,239 travel minutes. A higher move cap proved too slow in practice, so the limit has been restored to 100 for this project. Keep the validated 100-move result as the current local-search result; do not rerun extended search just to seek marginal improvements.
 
 ```powershell
 git pull origin main
@@ -532,7 +532,17 @@ python -m py_compile src/compare_schedulers.py
 python src/compare_schedulers.py
 ```
 
-The comparison script reports local-search travel reduction relative to both greedy and route insertion, and the comparison CSV now includes all three schedulers. Use the new output only after local-search validation passes.
+The comparison script reports local-search travel reduction relative to both greedy and route insertion, and the comparison CSV includes all three schedulers. The 100-move schedule already passed its validator.
+
+To regenerate the scheduler comparison from the existing validated summaries, run:
+
+```powershell
+git pull origin main
+python -m py_compile src/compare_schedulers.py
+python src/compare_schedulers.py
+```
+
+
 
 ## Evaluation plan
 
