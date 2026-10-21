@@ -25,7 +25,7 @@ The intended workflow is:
 - The archive contains text files, including `TDCData.txt` and `TDCData_investment.txt`. The main text file is large, so inspect it before loading it into memory.
 - Research paper: https://doi.org/10.1002/net.22188
 
-The paper describes workday technicians as technician-day entities: it states that a workday technician is generated for each workday for each technician. The paper's reported instance summary gives 720 workday technicians, whereas this downloaded archive has 1,430 technician records. This discrepancy is unresolved and must be investigated rather than silently reconciled. The archive's technician time-window dates will be summarized to understand the rows before claims about technician counts are made. The paper reports 2,677 tasks, 31 skills and a five-day horizon.
+The paper describes workday technicians as technician-day entities: it states that a workday technician is generated for each workday for each technician. The paper's reported instance summary gives 720 workday technicians and 31 skills. The downloaded archive, whose MD5 was verified against the checksum published on Zenodo (AEA392018CF453374785AD38DC1E8FAC), parses into 1,430 uniquely numbered technician records and 32 observed skills. A semantic diagnostic further found exactly 286 rows on each of five dates (2020-02-24 through 2020-02-28). The difference from the paper's reported 720 workday technicians and 31 skills remains unresolved; do not silently reconcile the counts or infer the number of distinct master technicians. The task count (2,677) and five-day horizon agree with the paper.
 
 Download the data from Zenodo yourself and store it under `data/raw/`. Do not commit the large raw dataset to GitHub. Keep the downloaded originals unchanged, and document any preprocessing steps.
 
@@ -138,7 +138,15 @@ python src/investigate_dataset_semantics.py
 
 This diagnostic reports technician records by time-window date, the full skill vocabulary and any skills that occur on only one side (technician skills or task requirements), all tasks with an empty relevant-technician list, and whether the referenced technician IDs exist in the technician table. It also summarizes cancellation timestamps to inform whether cancellation prediction can be designed without target leakage.
 
-The associated paper explicitly states that travel times are measured in minutes. The dataset's observed 1,430 technician rows still do not match the paper's summary of 720 workday technicians; this remains an open data-version/representation question pending the diagnostic output and further inspection.
+The associated paper explicitly states that travel times are measured in minutes. The completed diagnostic confirms:
+- 1,430 unique technician IDs spanning 2020-02-24 to 2020-02-28, with 286 rows per date.
+- 2,677 unique task IDs and no technician IDs referenced by tasks that are missing from the technician table.
+- 32 distinct skill labels in both technician records and task requirements, with no unmatched skill labels.
+- 10 tasks have empty source-provided eligible-technician lists (7 not cancelled, 3 cancelled). Although workday technician records with the required skill exist for these tasks, the source's relevant-technician lists are empty; the precise source-side reason is not established by this diagnostic.
+- 444 tasks are marked cancelled; 444 nonblank `modified` timestamps are present, so `modified` is excluded from cancellation models as a leakage risk.
+- 486 task records have a `created` timestamp later than their `time_window_start`, which makes the intended prediction decision time and feature availability particularly important to document.
+
+**Unresolved dataset discrepancy:** the exact published Zenodo archive yields 1,430 technician records and 32 skills, while the paper reports 720 workday technicians and 31 skills. The diagnostic characterizes the rows but does not explain the difference. Report the exact parsed counts and flag this as a data-version/representation discrepancy unless the authors or a source-provided explanation resolves it. Do not claim an exact reproduction of the paper's TDC Net instance without that reconciliation.
 
 ## Travel-time validation
 
