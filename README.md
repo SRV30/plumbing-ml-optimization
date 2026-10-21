@@ -353,6 +353,18 @@ The source dataset is telecommunications field-service data, not plumbing-compan
 
 Next, perform error analysis and a scheduling-impact experiment before claiming the ML component improves operations.
 
+## Duration-regression error analysis
+
+After running the chronological duration-regression experiment, inspect how errors vary by actual task duration:
+
+```powershell
+git pull origin main
+python -m py_compile src/analyze_duration_errors.py
+python src/analyze_duration_errors.py
+```
+
+This creates `results/duration_error_by_range.csv` and `results/figures/duration_mae_by_range.png`. It reports MAE/RMSE and signed error by actual duration bucket, which helps reveal systematic underprediction or overprediction for longer jobs.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
