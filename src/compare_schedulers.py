@@ -55,26 +55,31 @@ def main() -> None:
         ("total_service_minutes", "Scheduled service time", "minutes"),
     ]
 
+    method_columns = {
+        "Greedy append-only": "greedy_append_only",
+        "Route insertion": "route_insertion",
+        "Local search": "local_search",
+    }
     rows: list[dict[str, object]] = []
     for key, label, unit in metrics:
-        greedy_value = float(summaries["Greedy append-only"][key])
-        insertion_value = float(summaries["Route insertion"][key])
-        delta = insertion_value - greedy_value
+        row: dict[str, object] = {"metric": label, "unit": unit}
+        values = {}
+        for method_name, column_name in method_columns.items():
+            value = float(summaries[method_name][key])
+            row[column_name] = value
+            values[method_name] = value
+        row["local_search_minus_greedy"] = (
+            values["Local search"] - values["Greedy append-only"]
+        )
         if key == "total_travel_minutes_including_depot_returns":
-            reduction_pct = (
-                (greedy_value - insertion_value) / greedy_value * 100
+            greedy_value = values["Greedy append-only"]
+            row["travel_reduction_percent_vs_greedy"] = (
+                (greedy_value - values["Local search"]) / greedy_value * 100
                 if greedy_value else 0.0
             )
         else:
-            reduction_pct = ""
-        rows.append({
-            "metric": label,
-            "unit": unit,
-            "greedy_append_only": greedy_value,
-            "route_insertion": insertion_value,
-            "insertion_minus_greedy": delta,
-            "travel_reduction_percent_if_applicable": reduction_pct,
-        })
+            row["travel_reduction_percent_vs_greedy"] = ""
+        rows.append(row)
 
     DATA.mkdir(parents=True, exist_ok=True)
     FIGURES.mkdir(parents=True, exist_ok=True)
