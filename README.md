@@ -401,6 +401,26 @@ Positive signed error means overprediction; negative means underprediction. Ridg
 
 The source-recorded `duration` is a parameter in the original scheduling instance; it is not established as realized actual plumbing-service duration. Therefore, the next impact experiment is a counterfactual test only: it substitutes model predictions for held-out tasks, constructs a schedule, and then replays the route order using the source-recorded durations to count feasibility violations.
 
+## Duration-estimate scheduling-impact findings (counterfactual)
+
+The latest run substituted Ridge duration estimates (rounded up to integer minutes) for the 536 chronologically held-out task records, generated a route-insertion schedule, then replayed those routes using the source-recorded duration values.
+
+| Metric | Insertion using source durations | Insertion using Ridge estimates on hold-out |
+|---|---:|---:|
+| Active tasks assigned | 2,209 | 2,205 |
+| Active-task coverage | 98.93% | 98.75% |
+| Unassigned active tasks | 24 | 28 |
+| Routes used | 643 | 640 |
+| Travel time in planned route order (minutes) | 14,627 | 14,802 |
+| Routes with any violation on replay using source durations | 0 in validated source-duration plan | 25 |
+| Unique tasks with task-window/shift violations on replay | 0 in validated source-duration plan | 38 |
+
+The rounded-up Ridge predictions had a 26.09-minute MAE on the held-out records. In this counterfactual schedule, estimated durations did not improve the measured operational outcomes: it assigned four fewer tasks, coverage fell by 0.18 percentage points, planned travel rose by 175 minutes (about 1.20%), and the route replay found 25 routes with violations affecting 38 unique tasks.
+
+This is an important negative result for the current duration-estimation approach. It does not mean ML cannot help scheduling; it means this model and this use of its point predictions have not shown a scheduling benefit. The source problem treats duration as an input, and source data is telecom field service, not plumbing, so the impact experiment must be described as a counterfactual on a proxy dataset—not actual realized job outcomes or plumbing-company savings.
+
+The current project has now demonstrated (1) a validated routing/scheduling data pipeline, (2) two validated scheduling heuristics, (3) a reproducible method comparison, (4) exploratory cancellation classification that degrades sharply on chronological testing, and (5) duration regression with chronological testing and scheduling-impact analysis. Before finalizing, the next priority is to decide whether to improve the optimization algorithm as the main contribution and retain ML results as an exploratory component, or to identify better field-service data with a defensible target for prediction.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
