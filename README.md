@@ -560,3 +560,21 @@ Dataset and results: https://zenodo.org/records/7904015
 ## Team
 
 Group 5 — add all five members' names and enrollment numbers here once confirmed.
+
+
+## Interactive dashboard
+
+The Streamlit dashboard presents the saved results of the three scheduling methods, plots, an optional local-search route explorer, and the current ML limitations. It reads generated files from \`data/processed/\` and \`results/figures/\`; it does not rerun the scheduling algorithms.
+
+After pulling the latest repository, from the project root in the terminal with your virtual environment active, install the added dependency and start the dashboard:
+
+\`\`\`powershell
+git pull origin main
+python -m pip install -r requirements.txt
+python -m py_compile app.py
+streamlit run app.py
+\`\`\`
+
+A browser tab should open with the dashboard. To stop the server, press \`Ctrl+C\` in the terminal. If the browser does not open automatically, use the local URL printed by Streamlit, usually \`http://localhost:8501\`.
+
+The dashboard relies on local result files that are excluded from Git. If the summary JSON files are missing, regenerate them using the existing scheduling workflow and validate each schedule before citing its numbers. Do **not** run the longer relocation search just to populate the dashboard; use the already-validated 100-move local-search result. The app clearly labels the telecommunications-data limitation and does not claim that the ML models have improved scheduling.
