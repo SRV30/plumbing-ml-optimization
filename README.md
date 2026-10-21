@@ -224,6 +224,17 @@ The insertion output has separate files so it will not overwrite the greedy base
 
 The validator checks the generated table and recorded scheduling constraints. Compare the two methods only after the insertion run passes validation. A higher task-coverage number or lower travel time should be interpreted against the same constraint definitions; neither alone proves the method is globally optimal.
 
+## Compare the scheduling methods
+
+After both scheduling outputs have been generated and both validators pass, run:
+
+```powershell
+python -m py_compile src/compare_schedulers.py
+python src/compare_schedulers.py
+```
+
+The comparison script reads `baseline_summary.json` and `insertion_summary.json`, writes a side-by-side CSV, and creates separate PNG plots for travel time, task coverage and routes used. It does not modify either scheduler's outputs.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
