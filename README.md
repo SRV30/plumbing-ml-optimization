@@ -70,17 +70,17 @@ The archive inspection has confirmed that the ZIP is readable and contains two t
 - `TDCData.txt` (approximately 366.5 MB uncompressed)
 - `TDCData_investment.txt` (approximately 1.3 KB uncompressed)
 
-These are text files, not CSV/Excel files; that is expected. Do not assume a delimiter or load the main file with pandas until the file structure has been inspected.
+The preview of `TDCData.txt` confirms that it contains technician records with an ID, a list of skills, a working time window, and an investment-option flag. The small investment file describes settings such as skill investment, technician investment, overtime investment and digitization. This preview does **not** yet show the task records or travel-time structure.
 
-Run from the repository root:
+Run these commands from the repository root:
 
 ```powershell
 python src/inspect_dataset_zip.py
 python src/inspect_tdc_text.py
+python src/summarize_tdc_structure.py
 ```
 
-The second script previews a small number of lines directly from the ZIP without extracting the 366 MB text file. Review the sample to determine the encoding, field separators, headers and record structure before writing a parser.
-
+The structure-summary script reads the main text file line by line from inside the ZIP. It reports recognized section headings, approximate line counts and a few example records per section without extracting the large file or loading it all into memory. Inspect its output before writing a parser or training any model.
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
