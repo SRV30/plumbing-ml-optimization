@@ -385,6 +385,22 @@ Outputs:
 
 **Interpretation caveat:** the source paper defines task duration as a scheduling input. These are source-recorded reference values, not independently verified actual plumbing service times. The experiment only has operational meaning if duration is unknown at intake and the model features are known then. Label results accordingly; do not claim real-world savings from this proxy-data counterfactual.
 
+## Duration-model error analysis findings
+
+The chronological test-set error analysis reported the following mean absolute errors by source-recorded duration range:
+
+| Duration range (minutes) | Test tasks | Ridge MAE (minutes) | Ridge mean signed error (minutes) | Random Forest MAE (minutes) |
+|---|---:|---:|---:|---:|
+| 1–15 | 78 | 1.60 | +0.99 | 3.21 |
+| 16–30 | 16 | 14.68 | +12.48 | 21.18 |
+| 31–60 | 173 | 10.47 | +9.14 | 12.06 |
+| 61–120 | 182 | 29.60 | +26.36 | 33.31 |
+| 121+ | 87 | 72.28 | -66.30 | 68.89 |
+
+Positive signed error means overprediction; negative means underprediction. Ridge is accurate for the shortest jobs on this test split, tends to overpredict the 16–120 minute ranges, and strongly underpredicts jobs longer than 120 minutes. This long-duration bias could cause schedule plans to underestimate required time.
+
+The source-recorded `duration` is a parameter in the original scheduling instance; it is not established as realized actual plumbing-service duration. Therefore, the next impact experiment is a counterfactual test only: it substitutes model predictions for held-out tasks, constructs a schedule, and then replays the route order using the source-recorded durations to count feasibility violations.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
