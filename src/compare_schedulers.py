@@ -28,6 +28,7 @@ FIGURES = ROOT / "results" / "figures"
 SUMMARY_FILES = {
     "Greedy append-only": DATA / "baseline_summary.json",
     "Route insertion": DATA / "insertion_summary.json",
+    "Local search": DATA / "local_search_summary.json",
 }
 CSV_OUTPUT = DATA / "scheduler_comparison.csv"
 
@@ -83,7 +84,7 @@ def main() -> None:
         writer.writerows(rows)
 
     labels = list(SUMMARY_FILES.keys())
-    short_labels = ["Greedy", "Insertion"]
+    short_labels = ["Greedy", "Insertion", "Local search"]
 
     # Separate figures make each comparison readable in the final report.
     travel_values = [
@@ -142,21 +143,16 @@ def main() -> None:
     print(f"Greedy travel time:    {greedy_travel:,.2f} minutes")
     print(f"Insertion travel time: {insertion_travel:,.2f} minutes")
     print(f"Travel-time reduction: {reduction:,.2f} minutes ({reduction_pct:.2f}%)")
-    print(
-        "Assigned tasks:       "
-        f"{int(summaries['Greedy append-only']['assigned_tasks']):,} (greedy), "
-        f"{int(summaries['Route insertion']['assigned_tasks']):,} (insertion)"
-    )
-    print(
-        "Coverage:             "
-        f"{float(summaries['Greedy append-only']['active_task_coverage']):.2%} (greedy), "
-        f"{float(summaries['Route insertion']['active_task_coverage']):.2%} (insertion)"
-    )
-    print(
-        "Routes used:          "
-        f"{int(summaries['Greedy append-only']['technician_routes_used']):,} (greedy), "
-        f"{int(summaries['Route insertion']['technician_routes_used']):,} (insertion)"
-    )
+    print("\\nPer-method results:")
+    for label in labels:
+        item = summaries[label]
+        print(
+            f"  {label}: assigned={int(item['assigned_tasks']):,}, "
+            f"coverage={float(item['active_task_coverage']):.2%}, "
+            f"unassigned={int(item['unassigned_tasks']):,}, "
+            f"routes={int(item['technician_routes_used']):,}, "
+            f"travel={float(item['total_travel_minutes_including_depot_returns']):,.2f} min"
+        )
     print("\nCreated local files:")
     print(f"- {CSV_OUTPUT.relative_to(ROOT)}")
     print(f"- {travel_figure.relative_to(ROOT)}")
