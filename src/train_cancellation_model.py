@@ -40,6 +40,7 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data" / "processed"
@@ -184,8 +185,9 @@ def main() -> None:
         ]),
         "Logistic regression": Pipeline([
             ("vectorizer", DictVectorizer(sparse=True)),
+            ("scaler", StandardScaler(with_mean=False)),
             ("classifier", LogisticRegression(
-                max_iter=2000, class_weight="balanced", random_state=RANDOM_STATE
+                max_iter=5000, class_weight="balanced", random_state=RANDOM_STATE
             )),
         ]),
         "Random forest": Pipeline([
