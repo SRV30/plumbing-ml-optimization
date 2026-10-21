@@ -502,6 +502,23 @@ The local-search scheduler writes:
 
 The comparison script now compares greedy, route insertion and local search, updating the scheduler comparison CSV and plots. Local search is a bounded heuristic, not an exact optimizer; only report its outcome after the generated schedule passes validation.
 
+## Local-search scheduling results
+
+The third scheduling experiment started with the route-insertion schedule and accepted up to 100 feasible task-relocation moves, each chosen only when it reduced total route travel.
+
+| Metric | Greedy append-only | Route insertion | Relocation local search |
+|---|---:|---:|---:|
+| Assigned active tasks | 2,209 | 2,209 | 2,209 |
+| Unassigned active tasks | 24 | 24 | 24 |
+| Active-task coverage | 98.93% | 98.93% | 98.93% |
+| Technician-day routes used | 748 | 643 | 637 |
+| Travel minutes including depot returns | 17,783 | 14,627 | 14,239 |
+| Validation errors | 0 | 0 | 0 |
+
+Compared with route insertion, relocation local search reduced travel by 388 minutes (2.65%) and used six fewer routes, with assignments held constant. Compared with append-only greedy, it reduced travel by 3,544 minutes (19.93%) and used 111 fewer routes.
+
+The run accepted the full 100-move limit. This does not prove that no further improving relocation exists. The next experiment should increase the move budget (or use a defined stopping rule) and validate the final route table before reporting the result as a stronger heuristic outcome.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
