@@ -1,0 +1,58 @@
+{
+  "metadata": {
+    "purpose": "Aggregate demonstration fallback for the dashboard when local scheduler output files are absent.",
+    "data_source": "TDC Net telecommunications technician routing and scheduling instance",
+    "source_record": "https://zenodo.org/records/7904015",
+    "provenance": "Values transcribed from the project's previously validated local scheduler summaries and terminal comparison.",
+    "not_for_recomputation": "This file does not contain tasks, technician data, travel matrices, route rows, or sufficient information to rerun a scheduler.",
+    "limitations": [
+      "Not real plumbing-company data.",
+      "Aggregate-only; task-level Route Explorer requires locally generated CSV files.",
+      "Reported travel values are heuristic estimates for this research instance, not measured commercial savings."
+    ]
+  },
+  "summaries": {
+    "Greedy append-only": {
+      "baseline": "greedy_append_only",
+      "total_task_records": 2677,
+      "cancelled_excluded": 444,
+      "active_tasks": 2233,
+      "assigned_tasks": 2209,
+      "unassigned_tasks": 24,
+      "technician_routes_used": 748,
+      "active_task_coverage": 0.989252,
+      "total_travel_minutes_including_depot_returns": 17783,
+      "total_service_minutes": 140707
+    },
+    "Route insertion": {
+      "baseline": "route_insertion",
+      "total_task_records": 2677,
+      "cancelled_excluded": 444,
+      "active_tasks": 2233,
+      "assigned_tasks": 2209,
+      "unassigned_tasks": 24,
+      "technician_routes_used": 643,
+      "active_task_coverage": 0.989252,
+      "total_travel_minutes_including_depot_returns": 14627,
+      "total_service_minutes": 140707
+    },
+    "Local search": {
+      "baseline": "route_insertion_plus_relocation_local_search",
+      "note": "Bounded relocation local search starting from validated insertion schedule; not an exact solver.",
+      "total_task_records": 2677,
+      "cancelled_excluded": 444,
+      "active_tasks": 2233,
+      "assigned_tasks": 2209,
+      "unassigned_tasks": 24,
+      "technician_routes_used": 637,
+      "active_task_coverage": 0.989252,
+      "total_travel_minutes_including_depot_returns": 14239,
+      "total_service_minutes": 140707,
+      "initial_insertion_travel_minutes": 14627,
+      "travel_reduction_minutes": 388,
+      "travel_reduction_percent": 2.65,
+      "accepted_relocation_moves": 100,
+      "max_accepted_moves": 100
+    }
+  }
+}
