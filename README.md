@@ -450,6 +450,36 @@ The calibrated scheduling outputs use separate filenames and do not overwrite th
 
 Calibration is intended to reduce underprediction, not to guarantee feasibility. A larger buffer can increase scheduling reliability but also cause more tasks to be considered infeasible. We will compare held-out coverage, travel time, and replay violations to see whether the trade-off is justified.
 
+## Calibrated duration impact results (counterfactual)
+
+The calibration experiment used 1,606 tasks for fitting, 535 for residual calibration, and 536 for final testing. A nonnegative 90th-percentile residual buffer of 46 minutes was applied to raw Ridge predictions.
+
+| Test-set metric | Raw Ridge | Ridge + 46-minute buffer |
+|---|---:|---:|
+| MAE | 24.80 min | 57.29 min |
+| RMSE | 48.32 min | 64.70 min |
+| R² | 0.4603 | 0.0326 |
+| Underprediction rate | 38.99% | 10.63% |
+| One-sided coverage | 61.01% | 89.37% |
+
+The buffer reduced underprediction but increased point-prediction error substantially. It is a scheduling-safety trade-off, not an improvement in ordinary duration-prediction accuracy.
+
+The calibrated-duration scheduling counterfactual reported:
+
+| Metric | Insertion using source durations | Insertion using calibrated predictions for hold-out tasks |
+|---|---:|---:|
+| Assigned active tasks | 2,209 | 2,198 |
+| Unassigned active tasks | 24 | 35 |
+| Active-task coverage | 98.93% | 98.43% |
+| Routes used | 643 | 668 |
+| Planned travel minutes | 14,627 | 15,855 |
+| Routes with replay violations | 0 | 11 |
+| Unique tasks with task-window/shift violations on replay | 0 | 11 |
+
+Compared with the previous unbuffered Ridge counterfactual (25 routes with replay violations and 38 unique tasks with task-window/shift violations), the buffer reduced violation-affected routes by 56% and affected tasks by about 71%. However, compared with the source-duration schedule, it assigned 11 fewer tasks, used 25 more routes, and increased planned travel by 1,228 minutes (about 8.39%).
+
+**Decision:** the calibrated estimates reduce but do not eliminate feasibility violations, and they worsen coverage/travel relative to using source durations. This does not establish an operational improvement. Keep the result as a counterfactual trade-off analysis. The source duration is a scheduling input in the source research instance, and the data is telecommunications field service, not actual plumbing work. Any claims about a real unknown-duration deployment require a defensible decision-time setup and relevant service data.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
