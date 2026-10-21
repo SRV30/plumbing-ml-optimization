@@ -480,6 +480,28 @@ Compared with the previous unbuffered Ridge counterfactual (25 routes with repla
 
 **Decision:** the calibrated estimates reduce but do not eliminate feasibility violations, and they worsen coverage/travel relative to using source durations. This does not establish an operational improvement. Keep the result as a counterfactual trade-off analysis. The source duration is a scheduling input in the source research instance, and the data is telecommunications field service, not actual plumbing work. Any claims about a real unknown-duration deployment require a defensible decision-time setup and relevant service data.
 
+## Route-relocation local search
+
+The route-insertion heuristic reduced travel compared with append-only greedy scheduling. The next optimization experiment applies deterministic relocation local search to the validated insertion routes. It tries moving an already-assigned task from one technician-day route to another technician-day route eligible for that task, accepting only moves that remain feasible and reduce total travel. This experiment keeps the assigned task set fixed.
+
+Run:
+
+```powershell
+git pull origin main
+python -m py_compile src/run_local_search_scheduler.py
+python src/run_local_search_scheduler.py
+python -m py_compile src/validate_local_search_schedule.py
+python src/validate_local_search_schedule.py
+python src/compare_schedulers.py
+```
+
+The local-search scheduler writes:
+- `data/processed/local_search_task_status.csv`
+- `data/processed/local_search_routes.csv`
+- `data/processed/local_search_summary.json`
+
+The comparison script now compares greedy, route insertion and local search, updating the scheduler comparison CSV and plots. Local search is a bounded heuristic, not an exact optimizer; only report its outcome after the generated schedule passes validation.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
