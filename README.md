@@ -335,6 +335,24 @@ The script sorts tasks by their creation timestamp, trains on the older 80%, and
 
 The script excludes the task ID, cancellation outcome and `modified` timestamp from its features. However, before interpreting results for a real business, confirm whether the source `duration` represents an estimate known before service or realized duration, and whether window/eligibility information is available at prediction time. The dataset represents telecommunications field service, not plumbing; even strong metrics would remain a proxy-data result.
 
+## Chronological task-duration regression results
+
+The duration-regression script used 2,141 earlier-created tasks for training and 536 newer-created tasks for testing.
+
+| Model | MAE (minutes) | RMSE (minutes) | Median absolute error (minutes) | R² |
+|---|---:|---:|---:|---:|
+| Training-set median baseline | 44.549 | 72.796 | 33.000 | -0.2248 |
+| Ridge regression | 25.833 | 48.074 | 11.001 | 0.4659 |
+| Random Forest regression | 27.483 | 48.951 | 11.301 | 0.4462 |
+
+Ridge had the lowest test MAE and RMSE among these tested methods. Relative to the median baseline, its MAE was about 42.0% lower and its RMSE about 34.0% lower on this chronological test split.
+
+**Critical target caveat:** In the source paper, task duration is defined as an input parameter of the technician-routing/scheduling problem (along with skills, time windows and penalty). Thus, the regression experiment demonstrates that the provided duration field can be estimated from other fields in this static dataset; it does not yet prove an operational benefit. It is only a defensible business feature if we frame the scenario as predicting duration when it is not yet known at intake and can justify the predictor fields available at that decision time. The paper does not establish that this duration column is realized job duration. See the paper's problem definition: https://arxiv.org/abs/2211.16968 (Section 2).
+
+The source dataset is telecommunications field-service data, not plumbing-company data. Any plumbing application is a prototype adaptation and this limitation must be stated in the report.
+
+Next, perform error analysis and a scheduling-impact experiment before claiming the ML component improves operations.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
