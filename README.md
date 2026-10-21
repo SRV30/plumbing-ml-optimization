@@ -235,6 +235,28 @@ python src/compare_schedulers.py
 
 The comparison script reads `baseline_summary.json` and `insertion_summary.json`, writes a side-by-side CSV, and creates separate PNG plots for travel time, task coverage and routes used. It does not modify either scheduler's outputs.
 
+## Initial Machine Learning experiment: cancellation prediction
+
+The parsed task table has a `cancelled` field (444 true, 2,233 false in the observed data). We will treat cancellation prediction as an exploratory ML candidate, not as a guaranteed final model.
+
+Before running the experiment, note a serious data-leakage risk: all 444 cancelled tasks have a nonblank count of 444 in the `modified` column, while the 2,233 non-cancelled tasks have blank `modified` values. Because modification can be recorded after an outcome, the model deliberately excludes `modified`. It also excludes `task_id` and the target label from features.
+
+Run:
+
+```powershell
+python -m py_compile src/train_cancellation_model.py
+python src/train_cancellation_model.py
+```
+
+The script compares:
+- a majority-class baseline;
+- class-weighted logistic regression; and
+- a class-weighted random forest.
+
+It reports accuracy, balanced accuracy, cancellation precision/recall/F1, average precision, ROC-AUC and a confusion matrix, and saves JSON/CSV results plus ROC and precision–recall plots under `results/`.
+
+This is a stratified random hold-out on one static telecommunications field-service dataset. Even a high score would not by itself establish production cancellation prediction or plumbing-business performance. We must interpret cancellation labels and feature availability at the intended prediction time, compare against the majority baseline, and report limitations honestly.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
