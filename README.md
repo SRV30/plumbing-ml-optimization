@@ -81,6 +81,27 @@ python src/summarize_tdc_structure.py
 ```
 
 The structure-summary script reads the main text file line by line from inside the ZIP. It reports recognized section headings, approximate line counts and a few example records per section without extracting the large file or loading it all into memory. Inspect its output before writing a parser or training any model.
+## Dataset validation: current findings
+
+The initial archive scan found these section counts in `TDCData.txt`:
+
+- `Technicians:` 1,430 data lines
+- `Tasks:` 2,677 data lines
+- `Travel time:` 14,823,979 data lines
+- Total main-file lines: 14,828,089
+
+Observed fields in the sample technician/task records include technician IDs, technician skills, working time windows, task IDs, required skills, duration, task time windows, priority, penalty, created/modified timestamps, cancellation status, and relevant technician IDs. Travel-time examples use a key such as `task1000task1: 186.0`.
+
+These counts and patterns come from a preliminary scan. Before parsing, inspect complete sample records because fields can vary (for example, some sample lines spell the time-window label as `timewindow` without a space) and the travel-time key semantics still need verification.
+
+Run:
+
+```powershell
+python src/preview_tdc_records.py
+```
+
+This prints three technician examples, three task examples and eight travel-time entries from the ZIP without extracting the 366 MB file. The output will help us define and validate the parser. Do not treat the travel-time values as minutes until the source documentation confirms their units.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
