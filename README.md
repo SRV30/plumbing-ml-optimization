@@ -504,7 +504,7 @@ The comparison script now compares greedy, route insertion and local search, upd
 
 ## Local-search scheduling results
 
-The third scheduling experiment started with the route-insertion schedule and accepted up to 100 feasible task-relocation moves, each chosen only when it reduced total route travel.
+The third scheduling experiment started with the route-insertion schedule and accepted up to 100 feasible task-relocation moves in the first run, each chosen only when it reduced total route travel. The configured move limit has since been raised to 300 so the search can continue exploring improvements.
 
 | Metric | Greedy append-only | Route insertion | Relocation local search |
 |---|---:|---:|---:|
@@ -518,6 +518,21 @@ The third scheduling experiment started with the route-insertion schedule and ac
 Compared with route insertion, relocation local search reduced travel by 388 minutes (2.65%) and used six fewer routes, with assignments held constant. Compared with append-only greedy, it reduced travel by 3,544 minutes (19.93%) and used 111 fewer routes.
 
 The run accepted the full 100-move limit. This does not prove that no further improving relocation exists. The next experiment should increase the move budget (or use a defined stopping rule) and validate the final route table before reporting the result as a stronger heuristic outcome.
+
+### Extended relocation search
+
+The first run reached its 100-move limit, so it did not establish a local optimum. The configured limit is now 300 accepted moves. To rerun from the same validated route-insertion starting point and compare all three methods again:
+
+```powershell
+git pull origin main
+python -m py_compile src/run_local_search_scheduler.py
+python src/run_local_search_scheduler.py
+python src/validate_local_search_schedule.py
+python -m py_compile src/compare_schedulers.py
+python src/compare_schedulers.py
+```
+
+The comparison script reports local-search travel reduction relative to both greedy and route insertion, and the comparison CSV now includes all three schedulers. Use the new output only after local-search validation passes.
 
 ## Evaluation plan
 
