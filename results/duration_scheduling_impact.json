@@ -1,0 +1,422 @@
+{
+  "baseline_actual_duration": {
+    "assigned_tasks": 2209,
+    "unassigned_tasks": 24,
+    "active_task_coverage": 0.989252,
+    "routes_used": 643,
+    "travel_minutes": 14627.0,
+    "interpretation": "Existing route-insertion schedule built using source-recorded durations."
+  },
+  "estimated_duration_schedule": {
+    "duration_predictions_used_for_tasks": 536,
+    "assigned_tasks": 2205,
+    "unassigned_tasks": 28,
+    "empty_source_eligibility_count": 7,
+    "no_feasible_insertion_count": 21,
+    "active_task_coverage": 0.987461,
+    "routes_used": 640,
+    "travel_minutes_using_estimated_duration_route_order": 14802.0,
+    "duration_predictions_mae_minutes_on_holdout": 26.088,
+    "routes_with_any_violation_when_replayed_with_source_durations": 25,
+    "routes_feasible_when_replayed_with_source_durations": 615,
+    "tasks_with_task-window_or_shift_violations_on_replay": 38,
+    "violation_examples": [
+      {
+        "task_id": 2634,
+        "technician_id": 25,
+        "route_sequence": 2,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T12:48:00",
+        "actual_service_finish": "2020-02-28T16:12:00"
+      },
+      {
+        "task_id": 2430,
+        "technician_id": 50,
+        "route_sequence": 3,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T14:40:00",
+        "actual_service_finish": "2020-02-28T16:32:00"
+      },
+      {
+        "task_id": 441,
+        "technician_id": 65,
+        "route_sequence": 6,
+        "violation_types": [
+          "task_window",
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T15:06:00",
+        "actual_service_finish": "2020-02-28T15:49:00"
+      },
+      {
+        "task_id": 2050,
+        "technician_id": 65,
+        "route_sequence": 7,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T15:51:00",
+        "actual_service_finish": "2020-02-28T16:01:00"
+      },
+      {
+        "task_id": 29,
+        "technician_id": 70,
+        "route_sequence": 8,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T14:57:00",
+        "actual_service_finish": "2020-02-28T15:41:00"
+      },
+      {
+        "task_id": 819,
+        "technician_id": 70,
+        "route_sequence": 9,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T15:42:00",
+        "actual_service_finish": "2020-02-28T15:51:00"
+      },
+      {
+        "task_id": 815,
+        "technician_id": 70,
+        "route_sequence": 10,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T15:51:00",
+        "actual_service_finish": "2020-02-28T16:01:00"
+      },
+      {
+        "task_id": 2644,
+        "technician_id": 70,
+        "route_sequence": 11,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T16:04:00",
+        "actual_service_finish": "2020-02-28T16:15:00"
+      },
+      {
+        "task_id": 2633,
+        "technician_id": 170,
+        "route_sequence": 6,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T12:34:00",
+        "actual_service_finish": "2020-02-28T15:31:00"
+      },
+      {
+        "task_id": 2118,
+        "technician_id": 170,
+        "route_sequence": 7,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T15:36:00",
+        "actual_service_finish": "2020-02-28T15:47:00"
+      },
+      {
+        "task_id": 2487,
+        "technician_id": 185,
+        "route_sequence": 2,
+        "violation_types": [
+          "task_window",
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T10:31:00",
+        "actual_service_finish": "2020-02-28T17:28:00"
+      },
+      {
+        "task_id": 2445,
+        "technician_id": 185,
+        "route_sequence": 3,
+        "violation_types": [
+          "task_window",
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T17:28:00",
+        "actual_service_finish": "2020-02-28T23:37:00"
+      },
+      {
+        "task_id": 2245,
+        "technician_id": 218,
+        "route_sequence": 4,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-26T14:51:00",
+        "actual_service_finish": "2020-02-26T15:46:00"
+      },
+      {
+        "task_id": 2400,
+        "technician_id": 235,
+        "route_sequence": 7,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T13:53:00",
+        "actual_service_finish": "2020-02-28T16:09:00"
+      },
+      {
+        "task_id": 431,
+        "technician_id": 309,
+        "route_sequence": 6,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-27T14:34:00",
+        "actual_service_finish": "2020-02-27T15:44:00"
+      },
+      {
+        "task_id": 2078,
+        "technician_id": 400,
+        "route_sequence": 5,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T14:47:00",
+        "actual_service_finish": "2020-02-28T15:42:00"
+      },
+      {
+        "task_id": 2440,
+        "technician_id": 425,
+        "route_sequence": 5,
+        "violation_types": [
+          "task_window",
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T13:47:00",
+        "actual_service_finish": "2020-02-28T16:15:00"
+      },
+      {
+        "task_id": 94,
+        "technician_id": 425,
+        "route_sequence": 6,
+        "violation_types": [
+          "task_window",
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T16:32:00",
+        "actual_service_finish": "2020-02-28T16:49:00"
+      },
+      {
+        "task_id": 1431,
+        "technician_id": 474,
+        "route_sequence": 5,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-27T14:54:00",
+        "actual_service_finish": "2020-02-27T15:38:00"
+      },
+      {
+        "task_id": 1315,
+        "technician_id": 474,
+        "route_sequence": 6,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-27T15:38:00",
+        "actual_service_finish": "2020-02-27T15:55:00"
+      },
+      {
+        "task_id": 2214,
+        "technician_id": 493,
+        "route_sequence": 4,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-26T12:10:00",
+        "actual_service_finish": "2020-02-26T15:34:00"
+      },
+      {
+        "task_id": 2211,
+        "technician_id": 689,
+        "route_sequence": 4,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-27T12:57:00",
+        "actual_service_finish": "2020-02-27T16:21:00"
+      },
+      {
+        "task_id": 2219,
+        "technician_id": 756,
+        "route_sequence": 2,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-26T12:44:00",
+        "actual_service_finish": "2020-02-26T16:08:00"
+      },
+      {
+        "task_id": 2512,
+        "technician_id": 814,
+        "route_sequence": 3,
+        "violation_types": [
+          "task_window",
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T12:33:00",
+        "actual_service_finish": "2020-02-28T17:28:00"
+      },
+      {
+        "task_id": 2217,
+        "technician_id": 903,
+        "route_sequence": 4,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-26T12:24:00",
+        "actual_service_finish": "2020-02-26T15:48:00"
+      },
+      {
+        "task_id": 2348,
+        "technician_id": 982,
+        "route_sequence": 2,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T09:59:00",
+        "actual_service_finish": "2020-02-28T16:06:00"
+      },
+      {
+        "task_id": 1758,
+        "technician_id": 982,
+        "route_sequence": 3,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T16:30:00",
+        "actual_service_finish": "2020-02-28T18:14:00"
+      },
+      {
+        "task_id": 988,
+        "technician_id": 1002,
+        "route_sequence": 3,
+        "violation_types": [
+          "task_window"
+        ],
+        "actual_service_start": "2020-02-26T12:08:00",
+        "actual_service_finish": "2020-02-26T13:19:00"
+      },
+      {
+        "task_id": 725,
+        "technician_id": 1002,
+        "route_sequence": 4,
+        "violation_types": [
+          "task_window"
+        ],
+        "actual_service_start": "2020-02-26T13:19:00",
+        "actual_service_finish": "2020-02-26T14:06:00"
+      },
+      {
+        "task_id": 1285,
+        "technician_id": 1002,
+        "route_sequence": 5,
+        "violation_types": [
+          "task_window",
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-26T14:07:00",
+        "actual_service_finish": "2020-02-26T18:07:00"
+      },
+      {
+        "task_id": 2519,
+        "technician_id": 1063,
+        "route_sequence": 2,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T13:38:00",
+        "actual_service_finish": "2020-02-28T19:46:00"
+      },
+      {
+        "task_id": 2636,
+        "technician_id": 1063,
+        "route_sequence": 3,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T19:46:00",
+        "actual_service_finish": "2020-02-28T21:29:00"
+      },
+      {
+        "task_id": 1468,
+        "technician_id": 1106,
+        "route_sequence": 3,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T14:04:00",
+        "actual_service_finish": "2020-02-28T15:38:00"
+      },
+      {
+        "task_id": 2263,
+        "technician_id": 1117,
+        "route_sequence": 4,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-27T14:24:00",
+        "actual_service_finish": "2020-02-27T19:37:00"
+      },
+      {
+        "task_id": 212,
+        "technician_id": 1117,
+        "route_sequence": 5,
+        "violation_types": [
+          "task_window",
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-27T19:37:00",
+        "actual_service_finish": "2020-02-27T19:47:00"
+      },
+      {
+        "task_id": 1121,
+        "technician_id": 1188,
+        "route_sequence": 5,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-27T15:27:00",
+        "actual_service_finish": "2020-02-27T15:44:00"
+      },
+      {
+        "task_id": 1040,
+        "technician_id": 1301,
+        "route_sequence": 2,
+        "violation_types": [
+          "task_window"
+        ],
+        "actual_service_start": "2020-02-28T11:22:00",
+        "actual_service_finish": "2020-02-28T12:34:00"
+      },
+      {
+        "task_id": 2608,
+        "technician_id": 1403,
+        "route_sequence": 3,
+        "violation_types": [
+          "technician_shift"
+        ],
+        "actual_service_start": "2020-02-28T14:00:00",
+        "actual_service_finish": "2020-02-28T17:24:00"
+      }
+    ]
+  },
+  "caveats": [
+    "Counterfactual experiment: only chronologically held-out tasks use Ridge predictions; older tasks retain source durations.",
+    "Predictions are rounded up to integer minutes for scheduling.",
+    "Replay uses source-recorded duration values to test whether estimated-duration routes would remain feasible.",
+    "Source durations are defined as scheduling inputs in the associated paper; this experiment is only relevant if duration can be unknown at intake.",
+    "Data represents telecom field service, not actual plumbing operations.",
+    "The insertion heuristic is not an exact or optimal solver."
+  ]
+}

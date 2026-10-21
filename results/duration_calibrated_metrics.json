@@ -1,0 +1,53 @@
+{
+  "experiment": "chronological_duration_prediction_with_one_sided_calibration",
+  "target": "source-recorded task duration in minutes",
+  "split": {
+    "method": "chronological train/calibration/test",
+    "train_fraction": 0.6,
+    "calibration_fraction": 0.2,
+    "test_fraction": 0.2,
+    "train_rows": 1606,
+    "calibration_rows": 535,
+    "test_rows": 536,
+    "train_created_min": "2019-07-03T12:43:19",
+    "train_created_max": "2020-02-24T13:28:22",
+    "calibration_created_min": "2020-02-24T13:30:12",
+    "calibration_created_max": "2020-02-26T10:37:15",
+    "test_created_min": "2020-02-26T10:38:14",
+    "test_created_max": "2020-03-03T12:07:00"
+  },
+  "calibration": {
+    "method": "nonnegative higher-quantile residual buffer",
+    "target_quantile": 0.9,
+    "raw_residual_quantile_minutes": 45.229691869720114,
+    "applied_buffer_minutes": 46,
+    "calibration_actual_coverage": 0.9009345794392524
+  },
+  "test_metrics_raw_ridge": {
+    "mae_minutes": 24.798904119057752,
+    "rmse_minutes": 48.3239388827001,
+    "r2": 0.4602752463448667,
+    "underprediction_rate": 0.38992537313432835,
+    "one_sided_coverage": 0.6100746268656716
+  },
+  "test_metrics_buffered_ridge": {
+    "mae_minutes": 57.291044776119406,
+    "rmse_minutes": 64.69529614495617,
+    "r2": 0.032628932024803436,
+    "underprediction_rate": 0.10634328358208955,
+    "one_sided_coverage": 0.8936567164179104
+  },
+  "features_excluded": [
+    "task_id",
+    "duration target",
+    "cancelled outcome",
+    "modified timestamp"
+  ],
+  "caveats": [
+    "The dataset is telecom field-service data, not plumbing-company data.",
+    "The source paper treats duration as a scheduling input; the prediction use case assumes duration is unavailable at intake.",
+    "Features must be confirmed available at the intended prediction time.",
+    "A residual buffer may help with underprediction but may increase overprediction and reduce schedulability.",
+    "Temporal coverage on a small static dataset is not a deployment guarantee."
+  ]
+}

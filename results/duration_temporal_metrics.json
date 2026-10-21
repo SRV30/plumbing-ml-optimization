@@ -1,0 +1,55 @@
+{
+  "experiment": "chronological_task_duration_prediction",
+  "target": "duration minutes",
+  "split": "oldest 80% by created timestamp for training; newest 20% for testing",
+  "train_rows": 2141,
+  "test_rows": 536,
+  "train_created_min": "2019-07-03T12:43:19",
+  "train_created_max": "2020-02-26T10:37:15",
+  "test_created_min": "2020-02-26T10:38:14",
+  "test_created_max": "2020-03-03T12:07:00",
+  "train_duration_summary": {
+    "mean": 57.93974778141055,
+    "median": 49.0,
+    "min": 6.0,
+    "max": 405.0
+  },
+  "test_duration_summary": {
+    "mean": 80.18656716417911,
+    "median": 62.0,
+    "min": 9.0,
+    "max": 480.0
+  },
+  "features_excluded": [
+    "task_id (identifier)",
+    "duration (target)",
+    "cancelled (final outcome)",
+    "modified timestamp (possible outcome leakage)"
+  ],
+  "caveats": [
+    "Dataset comes from telecommunications field service, not a plumbing company.",
+    "This estimates the recorded duration field; confirm whether it represents planned duration or realized service time.",
+    "Feature availability at the intended prediction time must be established.",
+    "One chronological hold-out on one static instance is exploratory and not proof of deployment performance."
+  ],
+  "models": {
+    "Median baseline": {
+      "mae_minutes": 44.548507462686565,
+      "rmse_minutes": 72.79599894696526,
+      "median_absolute_error_minutes": 33.0,
+      "r2": -0.22479302395669665
+    },
+    "Ridge regression": {
+      "mae_minutes": 25.833348698468026,
+      "rmse_minutes": 48.073642312807365,
+      "median_absolute_error_minutes": 11.001116357017338,
+      "r2": 0.46585183638497074
+    },
+    "Random forest": {
+      "mae_minutes": 27.48339117750444,
+      "rmse_minutes": 48.951083835726585,
+      "median_absolute_error_minutes": 11.30078171828172,
+      "r2": 0.4461753163464032
+    }
+  }
+}

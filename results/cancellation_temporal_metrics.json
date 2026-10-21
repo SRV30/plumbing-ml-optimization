@@ -1,0 +1,71 @@
+{
+  "experiment": "chronological_cancellation_prediction",
+  "target": "cancelled (True positive class)",
+  "split": "older 80% by created timestamp for training; latest 20% for testing",
+  "train_rows": 2141,
+  "test_rows": 536,
+  "train_created_min": "2019-07-03T12:43:19",
+  "train_created_max": "2020-02-26T10:37:15",
+  "test_created_min": "2020-02-26T10:38:14",
+  "test_created_max": "2020-03-03T12:07:00",
+  "train_class_counts": {
+    "cancelled": 362,
+    "not_cancelled": 1779
+  },
+  "features_excluded": [
+    "task_id",
+    "modified timestamp",
+    "cancelled target"
+  ],
+  "caveats": [
+    "Single static telecommunications field-service instance, not plumbing-specific data.",
+    "A chronological hold-out is more deployment-oriented than a random split but does not prove causal or production performance.",
+    "Feature availability at the actual prediction decision time must be confirmed.",
+    "The final-state cancellation label may reflect events occurring after the recorded creation timestamp."
+  ],
+  "models": {
+    "Majority baseline": {
+      "accuracy": 0.8470149253731343,
+      "balanced_accuracy": 0.5,
+      "cancellation_precision": 0.0,
+      "cancellation_recall": 0.0,
+      "cancellation_f1": 0.0,
+      "average_precision": 0.15298507462686567,
+      "roc_auc": 0.5,
+      "true_negative": 454,
+      "false_positive": 0,
+      "false_negative": 82,
+      "true_positive": 0
+    },
+    "Logistic regression": {
+      "accuracy": 0.4832089552238806,
+      "balanced_accuracy": 0.5200655420651122,
+      "cancellation_precision": 0.16262975778546712,
+      "cancellation_recall": 0.573170731707317,
+      "cancellation_f1": 0.25336927223719674,
+      "average_precision": 0.15810046393156565,
+      "roc_auc": 0.5227248307725368,
+      "true_negative": 212,
+      "false_positive": 242,
+      "false_negative": 35,
+      "true_positive": 47
+    },
+    "Random forest": {
+      "accuracy": 0.8470149253731343,
+      "balanced_accuracy": 0.5049962393897066,
+      "cancellation_precision": 0.5,
+      "cancellation_recall": 0.012195121951219513,
+      "cancellation_f1": 0.023809523809523808,
+      "average_precision": 0.21152603236131146,
+      "roc_auc": 0.6036316750832706,
+      "true_negative": 453,
+      "false_positive": 1,
+      "false_negative": 81,
+      "true_positive": 1
+    }
+  },
+  "test_class_counts": {
+    "cancelled": 82,
+    "not_cancelled": 454
+  }
+}

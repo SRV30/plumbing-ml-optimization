@@ -1,0 +1,3 @@
+scenario,assigned_tasks,unassigned_tasks,active_task_coverage,routes_used,travel_minutes,replay_infeasible_routes,replay_task_violations
+Insertion schedule using source durations,2209,24,0.989252,643,14627.0,0,0
+Insertion schedule using Ridge estimates for held-out tasks,2198,35,0.984326,668,15855.0,11,11
