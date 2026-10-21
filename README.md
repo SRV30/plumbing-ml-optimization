@@ -130,6 +130,37 @@ This diagnostic reports technician records by time-window date, the full skill v
 
 The associated paper explicitly states that travel times are measured in minutes. The dataset's observed 1,430 technician rows still do not match the paper's summary of 720 workday technicians; this remains an open data-version/representation question pending the diagnostic output and further inspection.
 
+## Travel-time validation
+
+The streaming scan of the travel-time section reported:
+
+- Total classified entries: 14,823,979
+- Task-to-task entries: 7,166,329 (`2677 × 2677`)
+- Task-to-technician entries: 3,828,110 (`2677 × 1430`)
+- Technician-to-task entries: 3,828,110 (`1430 × 2677`)
+- Technician-to-technician entries: 1,430, all observed as technician self-pairs
+- Unrecognized entries: 0
+- Negative values: 0
+- Invalid typed ID references: 0
+
+The earlier count of 4,107 self-pairs includes 2,677 task self-pairs plus 1,430 technician self-pairs; it does not indicate 4,107 technician-to-technician relationships.
+
+### Build travel-time matrices
+
+Run from the repository root after parsing the CSV files:
+
+```powershell
+python src/build_travel_matrices.py
+```
+
+The script streams the source archive and builds three local NumPy files in `data/processed/`:
+
+- `task_to_task.npy` (2,677 × 2,677)
+- `task_to_technician.npy` (2,677 × 1,430)
+- `technician_to_task.npy` (1,430 × 2,677)
+
+It uses NaN placeholders to verify that every expected pair appears exactly once. It publishes the final matrix files only when category counts, ID references, duplicate checks, missing-pair checks, and the technician self-pair checks pass. The matrix files are generated locally and excluded from Git.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
