@@ -1,0 +1,22 @@
+# Python environments and cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Secrets and local configuration
+.env
+.env.*
+
+# Downloaded source data and generated processed data
+# Keep only the empty folder placeholders in Git.
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
