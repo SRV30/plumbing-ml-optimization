@@ -193,7 +193,11 @@ def main() -> None:
                                             f"Line {line_number}: unexpected line in Tasks section: {line[:120]}"
                                         )
                             except (ValueError, TypeError) as error:
-                                issues.append(str(error))
+                                # Include the source row so format variations can be fixed safely.
+                                preview = line[:2500]
+                                if len(line) > 2500:
+                                    preview += "... [record truncated for display]"
+                                issues.append(f"{error}\n    RAW RECORD: {preview}")
 
             except KeyError:
                 print(f"Expected member {MAIN_MEMBER!r} was not found in the ZIP.")
