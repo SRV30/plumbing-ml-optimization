@@ -191,7 +191,7 @@ def main() -> None:
         "train_created_max": train["created_parsed"].max().isoformat(),
         "test_created_min": test["created_parsed"].min().isoformat(),
         "test_created_max": test["created_parsed"].max().isoformat(),
-        "train_class_counts": {str(bool(k)): int(v) for k, v in y_train.astype(int).reshape(-1, 1).ravel().__array__().shape[:0]},
+        "train_class_counts": {},
         "features_excluded": ["task_id", "modified timestamp", "cancelled target"],
         "caveats": [
             "Single static telecommunications field-service instance, not plumbing-specific data.",
