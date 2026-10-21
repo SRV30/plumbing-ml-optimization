@@ -161,6 +161,29 @@ The script streams the source archive and builds three local NumPy files in `dat
 
 It uses NaN placeholders to verify that every expected pair appears exactly once. It publishes the final matrix files only when category counts, ID references, duplicate checks, missing-pair checks, and the technician self-pair checks pass. The matrix files are generated locally and excluded from Git.
 
+## First scheduling baseline
+
+After the travel matrices have passed validation, run the deterministic greedy baseline:
+
+```powershell
+python -m py_compile src/run_greedy_scheduler.py
+python src/run_greedy_scheduler.py
+```
+
+The scheduler:
+- Excludes tasks already marked cancelled in the source.
+- Uses the task's source-provided relevant-technician ID list as the candidate set.
+- Orders tasks by numeric priority, higher penalty, earlier window end, then stable ID.
+- Appends each accepted task to one technician-day route if task and shift time windows remain feasible, including inbound travel, service duration and return travel.
+- Writes a status record for every task and a route table for assigned tasks.
+
+Outputs (local, Git-ignored):
+- `data/processed/baseline_task_status.csv`
+- `data/processed/baseline_routes.csv`
+- `data/processed/baseline_summary.json`
+
+This is a deterministic, append-only greedy heuristic. It is not an ML model and not guaranteed to be optimal. Unassigned tasks must be interpreted as tasks this particular heuristic could not schedule under its rules, not proof that no feasible schedule exists. The baseline results are a reference point for later comparisons.
+
 ## Evaluation plan
 
 The final evaluation depends on the validated data and selected research question. Possible scheduling measures include estimated travel time, unserved tasks, task coverage, time-window feasibility and workload balance. If a prediction task is supported by the source data, we will evaluate it using an appropriate held-out metric. Results will be compared with a clearly defined baseline and explained with plots and written interpretation.
