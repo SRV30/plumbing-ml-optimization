@@ -44,24 +44,34 @@ Install the initial dependencies using:
 python -m pip install -r requirements.txt
 ```
 
-## Planned repository structure
+## Repository structure
 
 ```text
 plumbing-ml-optimization/
+├── app.py                         # Streamlit results dashboard
 ├── data/
-│   ├── raw/              # Downloaded source data (not committed)
-│   └── processed/        # Generated / cleaned data (not committed)
+│   ├── raw/                       # Source archive; not committed
+│   └── processed/                 # Generated CSVs, matrices and summaries; ignored by Git
 ├── notebooks/
-├── src/
-│   ├── inspect_dataset_zip.py
-│   └── inspect_tdc_text.py
 ├── results/
-│   └── figures/
-├── report/
+│   ├── *.json and *.csv           # Tracked ML metrics/predictions and analysis outputs
+│   └── figures/                   # Tracked result plots
+├── report/                        # Final report/presentation/help file to be added
+├── src/
+│   ├── parse_tdc_records.py
+│   ├── build_travel_matrices.py
+│   ├── run_greedy_scheduler.py
+│   ├── run_insertion_scheduler.py
+│   ├── run_local_search_scheduler.py
+│   ├── validate_*_schedule.py
+│   ├── train_*_model*.py
+│   └── evaluate_*_scheduling_impact.py
 ├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
+
+Note: the processed source data, travel matrices and scheduler summary JSON files are local artifacts excluded from Git. A fresh clone therefore needs the source dataset and the preprocessing/scheduling workflow before the dashboard can load scheduler results.
 
 ## Dataset validation: current step
 
@@ -233,7 +243,7 @@ python -m py_compile src/compare_schedulers.py
 python src/compare_schedulers.py
 ```
 
-The comparison script reads `baseline_summary.json` and `insertion_summary.json`, writes a side-by-side CSV, and creates separate PNG plots for travel time, task coverage and routes used. It does not modify either scheduler's outputs.
+The comparison script reads `baseline_summary.json`, `insertion_summary.json`, and `local_search_summary.json`, writes a side-by-side CSV, and creates separate PNG plots for travel time, task coverage and routes used. It does not modify the scheduler outputs. The local-search summary must already exist; the comparison script does not run any scheduler.
 
 ## Initial Machine Learning experiment: cancellation prediction
 
@@ -484,16 +494,14 @@ Compared with the previous unbuffered Ridge counterfactual (25 routes with repla
 
 The route-insertion heuristic reduced travel compared with append-only greedy scheduling. The next optimization experiment applies deterministic relocation local search to the validated insertion routes. It tries moving an already-assigned task from one technician-day route to another technician-day route eligible for that task, accepting only moves that remain feasible and reduce total travel. This experiment keeps the assigned task set fixed.
 
-Run:
+The completed local-search run and validation already exist on the developer machine. Do not rerun local search merely to regenerate the comparison. To check or refresh the saved results without launching a new search, run:
 
 ```powershell
-git pull origin main
-python -m py_compile src/run_local_search_scheduler.py
-python src/run_local_search_scheduler.py
-python -m py_compile src/validate_local_search_schedule.py
 python src/validate_local_search_schedule.py
 python src/compare_schedulers.py
 ```
+
+The validator reads the saved schedule and checks assignment feasibility; the comparison script reads saved summaries only.
 
 The local-search scheduler writes:
 - `data/processed/local_search_task_status.csv`
@@ -504,7 +512,7 @@ The comparison script now compares greedy, route insertion and local search, upd
 
 ## Local-search scheduling results
 
-The third scheduling experiment started with the route-insertion schedule and accepted up to 100 feasible task-relocation moves in the first run, each chosen only when it reduced total route travel. The configured move limit has since been raised to 300 so the search can continue exploring improvements.
+The third scheduling experiment started with the route-insertion schedule and accepted 100 feasible task-relocation moves, each chosen only when it reduced total route travel. A later attempt with a higher move limit took too long to complete, so the cap has been restored to 100. Keep the validated 100-move result as the current result; do not rerun this scheduler just to search longer.
 
 | Metric | Greedy append-only | Route insertion | Relocation local search |
 |---|---:|---:|---:|
@@ -517,30 +525,23 @@ The third scheduling experiment started with the route-insertion schedule and ac
 
 Compared with route insertion, relocation local search reduced travel by 388 minutes (2.65%) and used six fewer routes, with assignments held constant. Compared with append-only greedy, it reduced travel by 3,544 minutes (19.93%) and used 111 fewer routes.
 
-The run accepted the full 100-move limit. This does not prove that no further improving relocation exists. The next experiment should increase the move budget (or use a defined stopping rule) and validate the final route table before reporting the result as a stronger heuristic outcome.
+The run accepted the full 100-move limit, so the result is a bounded heuristic improvement and does not prove local or global optimality. The 100-move schedule passed its validator. Extended search is not recommended for the current project because the higher move cap was too slow.
 
 ### Extended relocation search
 
 The first run reached its 100-move limit and produced a validated schedule at 14,239 travel minutes. A higher move cap proved too slow in practice, so the limit has been restored to 100 for this project. Keep the validated 100-move result as the current local-search result; do not rerun extended search just to seek marginal improvements.
 
-```powershell
-git pull origin main
-python -m py_compile src/run_local_search_scheduler.py
-python src/run_local_search_scheduler.py
-python src/validate_local_search_schedule.py
-python -m py_compile src/compare_schedulers.py
-python src/compare_schedulers.py
-```
+The longer search is intentionally not part of the recommended workflow. The validated 100-move schedule is the current result; the 300-move attempt was too slow and did not complete.
 
-The comparison script reports local-search travel reduction relative to both greedy and route insertion, and the comparison CSV includes all three schedulers. The 100-move schedule already passed its validator.
-
-To regenerate the scheduler comparison from the existing validated summaries, run:
+To regenerate the scheduler comparison from the existing saved summaries without rerunning scheduling, run:
 
 ```powershell
 git pull origin main
 python -m py_compile src/compare_schedulers.py
 python src/compare_schedulers.py
 ```
+
+The comparison script reports reductions relative to both greedy and route insertion. The summary files are generated locally and are Git-ignored.
 
 
 
@@ -564,17 +565,17 @@ Group 5 — add all five members' names and enrollment numbers here once confirm
 
 ## Interactive dashboard
 
-The Streamlit dashboard presents the saved results of the three scheduling methods, plots, an optional local-search route explorer, and the current ML limitations. It reads generated files from \`data/processed/\` and \`results/figures/\`; it does not rerun the scheduling algorithms.
+The Streamlit dashboard presents the saved results of the three scheduling methods, plots, an optional local-search route explorer, and the current ML limitations. It reads generated files from `data/processed/` and `results/figures/`; it does not rerun the scheduling algorithms.
 
 After pulling the latest repository, from the project root in the terminal with your virtual environment active, install the added dependency and start the dashboard:
 
-\`\`\`powershell
+```powershell
 git pull origin main
 python -m pip install -r requirements.txt
 python -m py_compile app.py
 streamlit run app.py
-\`\`\`
+```
 
-A browser tab should open with the dashboard. To stop the server, press \`Ctrl+C\` in the terminal. If the browser does not open automatically, use the local URL printed by Streamlit, usually \`http://localhost:8501\`.
+A browser tab should open with the dashboard. To stop the server, press `Ctrl+C` in the terminal. If the browser does not open automatically, use the local URL printed by Streamlit, usually `http://localhost:8501`.
 
 The dashboard relies on local result files that are excluded from Git. If the summary JSON files are missing, regenerate them using the existing scheduling workflow and validate each schedule before citing its numbers. Do **not** run the longer relocation search just to populate the dashboard; use the already-validated 100-move local-search result. The app clearly labels the telecommunications-data limitation and does not claim that the ML models have improved scheduling.
