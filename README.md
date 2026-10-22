@@ -127,6 +127,23 @@ The parser streams the ZIP and writes local outputs to:
 
 It validates record formats and duplicate IDs. If a row does not match, it reports the first parsing issues and deliberately does not write partial CSV files. Travel-time rows are not expanded in this step because that section contains nearly 14.8 million entries. The raw ZIP and generated processed files are excluded from Git.
 
+
+
+## Audit the investment-option flag before scheduling
+
+The downloaded technician table contains an `investment_option` field. Do not assume that a row with this flag set to `True` is part of the default available fleet until the meaning is confirmed from the companion investment file.
+
+Run this read-only audit after the parser has produced `technicians.csv`:
+
+```powershell
+git pull origin main
+python src/audit_investment_option.py
+```
+
+It reports the True/False counts, counts by workday and flag, and the contents of `TDCData_investment.txt` from the original ZIP if present. **No scheduler inputs are changed by this diagnostic.**
+
+Only after these counts and source-file semantics are reviewed should the project add separate default-fleet and investment-inclusive scheduling scenarios. If the technician table is filtered for a scenario, the travel matrices still use source technician IDs for row/column indexing; task eligible-technician lists must be intersected with the active technician IDs, while the matrices retain their original dimensions. Validate that every produced assignment uses an active and eligible technician.
+
 ## Data semantics investigation
 
 After running the parser and validating the CSVs, pull the latest repository and run:
