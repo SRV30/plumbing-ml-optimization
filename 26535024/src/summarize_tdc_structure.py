@@ -18,7 +18,7 @@ INVESTMENT_MEMBER = "TDCData_investment.txt"
 SAMPLE_LINES_PER_SECTION = 2
 MAX_SAMPLE_CHARS = 220
 
-# Dataset section labels are short lines like "Technicians:" or "Tasks:".
+
 SECTION_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9 _()/-]{0,70}:$")
 
 
@@ -66,7 +66,7 @@ def summarize_main_file(archive: ZipFile) -> None:
                         blank_lines += 1
                         continue
 
-                    # Only treat short, plain heading-like lines as section markers.
+                    
                     if len(stripped) <= 80 and SECTION_PATTERN.fullmatch(stripped):
                         current_section = stripped[:-1]
                         if current_section not in section_counts:
