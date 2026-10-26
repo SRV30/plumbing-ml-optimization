@@ -1,0 +1,57 @@
+{
+  "experiment": "chronological_q50_q80_duration_scheduling_counterfactual",
+  "baseline": {
+    "scenario": "Source durations (insertion baseline)",
+    "predicted_holdout_tasks": 0,
+    "assigned_tasks": 2209,
+    "unassigned_tasks": 24,
+    "active_task_coverage": 0.989252,
+    "routes_used": 643,
+    "planned_travel_minutes": 14627.0,
+    "routes_with_replay_violations": 0,
+    "unique_tasks_with_window_or_shift_violations": 0,
+    "return_after_shift_violations": 0
+  },
+  "scenarios": [
+    {
+      "scenario": "Q50",
+      "prediction_column": "q50_predicted_duration_minutes",
+      "predicted_holdout_tasks": 536,
+      "assigned_tasks": 2214,
+      "unassigned_tasks": 19,
+      "active_task_coverage": 0.991491,
+      "routes_used": 626,
+      "planned_travel_minutes": 14340.0,
+      "no_feasible_insertion_count": 12,
+      "routes_with_replay_violations": 57,
+      "unique_tasks_with_window_or_shift_violations": 83,
+      "return_after_shift_violations": 54,
+      "route_status_file": "data\\processed\\quantile_q50_task_status.csv",
+      "route_file": "data\\processed\\quantile_q50_routes.csv"
+    },
+    {
+      "scenario": "Q80",
+      "prediction_column": "q80_planned_duration_minutes",
+      "predicted_holdout_tasks": 536,
+      "assigned_tasks": 2204,
+      "unassigned_tasks": 29,
+      "active_task_coverage": 0.987013,
+      "routes_used": 648,
+      "planned_travel_minutes": 14765.0,
+      "no_feasible_insertion_count": 22,
+      "routes_with_replay_violations": 26,
+      "unique_tasks_with_window_or_shift_violations": 30,
+      "return_after_shift_violations": 25,
+      "route_status_file": "data\\processed\\quantile_q80_task_status.csv",
+      "route_file": "data\\processed\\quantile_q80_routes.csv"
+    }
+  ],
+  "caveats": [
+    "Only chronologically held-out tasks use Q50/Q80 predictions; earlier tasks retain source durations.",
+    "Predicted durations are rounded upward to whole minutes for scheduling.",
+    "Routes are replayed using source-recorded durations; these are not independently verified realized service times.",
+    "This is a counterfactual on telecommunications field-service data, not plumbing-business evidence.",
+    "A schedule-feasibility improvement is not guaranteed by quantile coverage.",
+    "The insertion heuristic is a heuristic, not an exact optimizer."
+  ]
+}

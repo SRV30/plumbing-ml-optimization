@@ -1,0 +1,4 @@
+scenario,predicted_holdout_tasks,assigned_tasks,unassigned_tasks,active_task_coverage,routes_used,planned_travel_minutes,routes_with_replay_violations,unique_tasks_with_window_or_shift_violations,return_after_shift_violations
+Source durations (insertion baseline),0,2209,24,0.989252,643,14627.0,0,0,0
+Q50,536,2214,19,0.991491,626,14340.0,57,83,54
+Q80,536,2204,29,0.987013,648,14765.0,26,30,25

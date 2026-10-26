@@ -1,0 +1,51 @@
+{
+  "experiment": "chronological_quantile_duration_prediction",
+  "target": "recorded duration in minutes",
+  "split": "oldest 80% by created timestamp train; newest 20% test",
+  "train_rows": 2141,
+  "test_rows": 536,
+  "train_created_min": "2019-07-03T12:43:19",
+  "train_created_max": "2020-02-26T10:37:15",
+  "test_created_min": "2020-02-26T10:38:14",
+  "test_created_max": "2020-03-03T12:07:00",
+  "features_excluded": [
+    "task_id (identifier)",
+    "duration (target)",
+    "cancelled (final outcome)",
+    "modified timestamp (possible outcome leakage)"
+  ],
+  "models": {
+    "median_baseline": {
+      "mae_minutes": 44.548507462686565,
+      "rmse_minutes": 72.79599894696526,
+      "median_absolute_error_minutes": 33.0
+    },
+    "ridge_point_estimate": {
+      "mae_minutes": 25.833226919169572,
+      "rmse_minutes": 48.073788565626195,
+      "median_absolute_error_minutes": 11.001846668125168
+    },
+    "gradient_boosting_q50": {
+      "mae_minutes": 27.53630414793504,
+      "rmse_minutes": 57.510066835226,
+      "median_absolute_error_minutes": 5.024529797105302,
+      "pinball_loss": 13.76815207396752
+    },
+    "gradient_boosting_q80_planning_estimate": {
+      "pinball_loss": 14.056559554426503,
+      "empirical_coverage": 0.792910447761194,
+      "target_quantile": 0.8,
+      "mean_planned_duration_minutes": 91.18440309506316,
+      "mean_underprediction_minutes": 11.856992368249688,
+      "underprediction_rate": 0.20708955223880596,
+      "mean_buffer_vs_q50_minutes": 31.244979051680804
+    }
+  },
+  "caveats": [
+    "The source dataset is telecommunications field-service data, not plumbing data.",
+    "The target is the recorded duration field; its meaning must be confirmed before operational use.",
+    "The 80th quantile is a conservative candidate, not a guarantee of schedule feasibility.",
+    "A single chronological hold-out does not establish production performance.",
+    "Only features available at the actual planning time should be used."
+  ]
+}
