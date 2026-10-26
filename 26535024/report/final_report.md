@@ -29,7 +29,7 @@ Complete this table before submission. The course instructions require group-mem
 
 Field-service businesses need to assign service tasks to qualified technicians while respecting work shifts, task time windows, task durations and travel times. These decisions are relevant to plumbing service chains, but evaluating a real plumbing business requires plumbing-specific operational data. This project builds and evaluates a research prototype using a publicly available telecommunications technician-routing instance from TDC Net.
 
-The workflow parses technician and task records, validates identifiers and time fields, constructs travel-time matrices, and compares three scheduling heuristics: append-only greedy scheduling, route insertion, and relocation-based local search. On the downloaded instance, all three methods assigned 2,209 of 2,233 non-cancelled tasks (98.93% coverage). Estimated travel, including return-to-depot legs, decreased from 17,783 minutes with greedy scheduling to 14,627 minutes with insertion and 14,239 minutes with local search. Local search therefore reduced estimated travel by 3,544 minutes (19.93%) relative to greedy scheduling and by 388 minutes (2.65%) relative to insertion, while preserving the assigned-task set. The generated schedules passed their implemented validators with zero reported errors.
+The workflow parses technician and task records, validates identifiers and time fields, constructs travel-time matrices, and compares three baseline scheduling heuristics—append-only greedy scheduling, route insertion, and relocation-based local search—and a bounded route-order enhancement using intra-route swaps and 2-opt. The three baseline methods assigned 2,209 of 2,233 non-cancelled tasks (98.93% coverage). Estimated travel, including return-to-depot legs, decreased from 17,783 minutes with greedy scheduling to 14,627 minutes with insertion and 14,239 minutes with relocation local search. The enhanced route-order pass further reduced travel to 14,174 minutes while preserving the same 2,209-task assignment set, a 3,609-minute (20.30%) reduction relative to greedy scheduling. The enhanced schedule passed its validator with 28,261 checks and zero reported errors; the baseline comparison figures cover the three baseline methods.
 
 Machine-learning experiments investigated task cancellation and duration estimation using chronological evaluation. Cancellation prediction was weak on the latest held-out tasks: a Random Forest identified only 1 of 82 cancelled tasks at the evaluated threshold. Ridge regression predicted the recorded duration field with a mean absolute error (MAE) of 25.83 minutes, compared with 44.55 minutes for a training-set median baseline. However, replacing supplied durations with model estimates did not improve scheduling outcomes in counterfactual experiments; it reduced coverage and introduced schedule-feasibility violations. A conservative 46-minute residual buffer reduced underprediction but increased point-prediction error and planned travel.
 
@@ -159,18 +159,18 @@ These are internal consistency and feasibility checks implemented in this reposi
 
 ### 4.1 Overall comparison
 
-| Metric | Greedy append-only | Route insertion | Relocation local search |
-|---|---:|---:|---:|
-| Total task records | 2,677 | 2,677 | 2,677 |
-| Cancelled tasks excluded | 444 | 444 | 444 |
-| Active tasks | 2,233 | 2,233 | 2,233 |
-| Assigned tasks | 2,209 | 2,209 | 2,209 |
-| Unassigned tasks | 24 | 24 | 24 |
-| Active-task coverage | 98.93% | 98.93% | 98.93% |
-| Technician-day routes used | 748 | 643 | 637 |
-| Estimated travel including return-to-depot legs | 17,783 min | 14,627 min | **14,239 min** |
-| Scheduled service time | 140,707 min | 140,707 min | 140,707 min |
-| Validation errors | 0 | 0 | 0 |
+| Metric | Greedy append-only | Route insertion | Relocation local search | Enhanced route-order local search |
+|---|---:|---:|---:|---:|
+| Total task records | 2,677 | 2,677 | 2,677 | 2,677 |
+| Cancelled tasks excluded | 444 | 444 | 444 | 444 |
+| Active tasks | 2,233 | 2,233 | 2,233 | 2,233 |
+| Assigned tasks | 2,209 | 2,209 | 2,209 | 2,209 |
+| Unassigned tasks | 24 | 24 | 24 | 24 |
+| Active-task coverage | 98.93% | 98.93% | 98.93% | 98.93% |
+| Technician-day routes used | 748 | 643 | 637 | 637 |
+| Estimated travel including return-to-depot legs | 17,783 min | 14,627 min | 14,239 min | **14,174 min** |
+| Scheduled service time | 140,707 min | 140,707 min | 140,707 min | 140,707 min |
+| Validation errors | 0 | 0 | 0 | 0 |
 
 **Figure 1. Estimated total travel time by scheduling method.**
 
@@ -188,16 +188,13 @@ If the embedded figures do not display in an exported document, insert the corre
 
 ### 4.2 Interpretation
 
-Route insertion reduced estimated travel from 17,783 to 14,627 minutes compared with greedy scheduling, a reduction of 3,156 minutes (about 17.75%). It also reduced route count from 748 to 643 while keeping the same 2,209 active tasks assigned.
+Route insertion reduced estimated travel from 17,783 to 14,627 minutes compared with greedy scheduling, a reduction of 3,156 minutes (17.75%). Relocation local search reduced travel by a further 388 minutes (2.65%) to 14,239 minutes. The enhanced route-order pass then reduced travel by another 65 minutes (0.46%) to **14,174 minutes**, while retaining 2,209 assigned tasks and 637 routes.
 
-Local search reduced travel by a further 388 minutes compared with insertion:
-- Relative reduction versus insertion: 388 / 14,627 = **2.65%**.
-- Total reduction versus greedy: 3,544 / 17,783 = **19.93%**.
-- Routes used decreased by 111 from greedy to local search (748 to 637).
+Across the tested sequence, the enhanced schedule reduces estimated travel by 3,609 minutes (20.30%) relative to greedy scheduling. The 65-minute enhancement is a modest incremental gain and should be interpreted as the result of a bounded heuristic, not a guarantee of further improvements on other instances.
 
 All methods assigned the same task set in the reported comparison. This is an advantage for interpretation: the lower travel figures are not explained by dropping additional tasks. The local-search procedure preserved assignment coverage by design and accepted only feasible, travel-improving task relocations.
 
-The estimated total travel is a model output computed from the instance's travel-time matrices and route sequences. It is not a measurement of real fuel use, payroll cost, emissions or plumbing-business savings. The results support a comparison of the three heuristics on this dataset only.
+The estimated total travel is a model output computed from the instance's travel-time matrices and route sequences. It is not a measurement of real fuel use, payroll cost, emissions or plumbing-business savings. The three baseline figures in Figures 1–3 do not include the enhanced route-order pass; the fourth table column reports its separately validated result. These results support a comparison of the tested heuristics on this dataset only.
 
 ### 4.3 Unassigned-task interpretation
 
@@ -355,7 +352,7 @@ Each reported scheduler should be associated with a passing validator. The ML sc
 
 ## 8. Conclusion
 
-This project built a reproducible pipeline for a technician-routing and scheduling instance, validated task and travel-time data structures, implemented three scheduling heuristics, and evaluated exploratory ML models. On the downloaded instance, route insertion improved estimated travel over append-only greedy scheduling, and bounded relocation local search reduced estimated travel further while preserving the assigned-task set. The best completed run reported 14,239 travel minutes and 98.93% active-task coverage, which is 19.93% less estimated travel than the greedy baseline.
+This project built a reproducible pipeline for a technician-routing and scheduling instance, validated task and travel-time data structures, implemented three baseline scheduling heuristics plus a bounded route-order enhancement, and evaluated exploratory ML models. On the downloaded instance, the enhanced schedule reported 14,174 estimated travel minutes, 637 routes, 2,209 assigned tasks, and 98.93% active-task coverage. This is 3,609 fewer travel minutes (20.30%) than the greedy baseline. The enhanced schedule passed 28,261 internal validation checks with zero errors; these checks do not prove global optimality.
 
 The ML experiments produced a more cautious outcome. Ridge regression reduced duration-prediction error compared with a median baseline, but using the predictions inside the scheduling workflow failed to improve results and introduced feasibility violations. Conservative residual calibration reduced underprediction and replay violations, but it worsened MAE, reduced coverage and increased planned travel. Cancellation prediction was weak on the chronological hold-out. Accordingly, the project does not claim that ML improved operational outcomes.
 
