@@ -56,12 +56,6 @@ for i, (enrollment, title, description, kind, page) in enumerate(cards):
         )
         st.write("")
 
-st.info(
-    "Research note: each module retains its own data, model, and limitations. "
-    "A shared portal does not imply that all models use the same dataset or have been "
-    "validated for production use."
-)
-
 st.subheader("How to navigate")
 st.markdown(
     "- Open a module from the **left sidebar**.\n"
