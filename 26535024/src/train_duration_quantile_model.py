@@ -127,7 +127,7 @@ def main() -> None:
     y_train = train["duration_target"].to_numpy(dtype=float)
     y_test = test["duration_target"].to_numpy(dtype=float)
 
-    # Baseline and point-estimate benchmark use the same chronological split.
+    
     median_baseline = DummyRegressor(strategy="median").fit(
         np.zeros((len(y_train), 1)), y_train
     )
@@ -137,8 +137,8 @@ def main() -> None:
     ridge.fit(x_train, y_train)
     ridge_pred = np.maximum(1.0, ridge.predict(x_test))
 
-    # Gradient boosting quantile regression estimates both typical and
-    # conservative service duration. Dense features are small for this dataset.
+    
+    
     q50_model = GradientBoostingRegressor(
         loss="quantile", alpha=0.50, n_estimators=200, learning_rate=0.04,
         max_depth=2, min_samples_leaf=8, random_state=RANDOM_STATE,
