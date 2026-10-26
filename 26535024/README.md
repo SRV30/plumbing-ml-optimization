@@ -606,3 +606,30 @@ streamlit run app.py
 A browser tab should open with the dashboard. To stop the server, press `Ctrl+C` in the terminal. If the browser does not open automatically, use the local URL printed by Streamlit, usually `http://localhost:8501`.
 
 The app clearly labels the telecommunications-data limitation and does not claim that the ML models have improved scheduling. The aggregate demo summary is not a replacement for the original source data, local route outputs, validation, or rerunning the analysis from source.
+
+
+## Added ML experiment: quantile duration prediction
+
+The module now includes `src/train_duration_quantile_model.py`, which compares a median baseline and Ridge regression with Gradient Boosting quantile models (Q50 and Q80). It uses a chronological train/test split and writes held-out metrics and predictions under `results/`. See `report/quantile_duration_model.md` for the methodology and interpretation.
+
+Run after preprocessing the source data:
+
+```powershell
+python -m py_compile src/train_duration_quantile_model.py
+python src/train_duration_quantile_model.py
+```
+
+Q80 is a conservative planning scenario, not a guarantee of feasibility. The script has not been validated on a real plumbing dataset, and results should not be interpreted as actual business savings.
+
+## Added route-order optimization: swap and 2-opt
+
+`src/improve_local_search_moves.py` extends the current local-search schedule with intra-route task swaps and 2-opt segment reversals. It starts from the saved relocation-local-search routes when available, otherwise from insertion routes. It only accepts feasible moves that reduce travel and verifies that the assigned task set remains unchanged.
+
+Run after the existing schedule and travel matrices have been generated:
+
+```powershell
+python -m py_compile src/improve_local_search_moves.py
+python src/improve_local_search_moves.py
+```
+
+Outputs are written to `data/processed/enhanced_local_search_*`. These files are local/Git-ignored. The enhanced heuristic has not been run against the local dataset in this commit, so no performance improvement is claimed until the generated summary is inspected and independently validated.
