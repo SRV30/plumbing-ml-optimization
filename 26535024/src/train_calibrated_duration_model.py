@@ -155,7 +155,7 @@ def main() -> None:
             "model": "Ridge regression",
             "actual_duration_minutes": int(actual),
             "raw_predicted_duration_minutes": round(float(raw_pred), 3),
-            # The scheduling-impact script uses this field as the selected estimate.
+            
             "predicted_duration_minutes": int(buffered_pred),
             "calibration_buffer_minutes": buffer,
         })
