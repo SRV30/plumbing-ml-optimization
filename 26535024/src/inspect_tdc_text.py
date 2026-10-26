@@ -24,7 +24,7 @@ def show_sample(archive: ZipFile, member_name: str) -> None:
 
     try:
         with archive.open(member_name, "r") as binary_stream:
-            # Replace undecodable characters during inspection; original bytes stay unchanged.
+            
             with io.TextIOWrapper(binary_stream, encoding="utf-8", errors="replace") as text_stream:
                 observed = 0
                 token_counts: list[int] = []
