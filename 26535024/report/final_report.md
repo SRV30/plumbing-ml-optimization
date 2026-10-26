@@ -384,5 +384,6 @@ The source-data discrepancy and domain mismatch should be stated plainly in any 
 - [ ] Add institution, course, faculty guide and submission date.
 - [ ] Check every table/figure against the generated project output.
 - [ ] Export the final report to PDF and add final page references to the first page.
-- [ ] Prepare presentation slides and a help file with environment setup and run commands.
-- [ ] Ensure the submitted code, report and dashboard all describe the telecommunications-data limitation honestly.
+- [ ] Convert `report/presentation_slides.md` into the required presentation format and verify the figures after layout.
+- [ ] Review `report/help.md` and verify the setup commands against a clean environment.
+- [ ] Ensure the submitted code, report, presentation and dashboard all describe the telecommunications-data limitation honestly.
