@@ -99,7 +99,7 @@ def main() -> None:
         print("Run the data preparation and validated insertion scheduler first.")
         return
 
-    # Prefer the existing relocation-local-search result as the starting point.
+    
     if LOCAL_ROUTES_PATH.exists() and LOCAL_STATUS_PATH.exists() and LOCAL_SUMMARY_PATH.exists():
         routes_path, status_path, summary_path = LOCAL_ROUTES_PATH, LOCAL_STATUS_PATH, LOCAL_SUMMARY_PATH
         starting_method = "existing_relocation_local_search"
@@ -173,7 +173,7 @@ def main() -> None:
     initial_travel = sum(item["travel"] for item in cached.values())
     move_log: list[dict[str, Any]] = []
 
-    # First-improvement descent: accept one feasible improvement, then restart.
+    
     for _ in range(MAX_ACCEPTED_MOVES):
         accepted = False
         for tech_id in sorted(routes):
@@ -184,7 +184,7 @@ def main() -> None:
             old_eval = cached[tech_id]
             old_cost = old_eval["travel"]
 
-            # Swap two tasks in the same route.
+            
             for i in range(n - 1):
                 for j in range(i + 1, n):
                     candidate = route.copy()
@@ -208,7 +208,7 @@ def main() -> None:
             if accepted:
                 break
 
-            # 2-opt: reverse every contiguous subsequence of length >= 2.
+            
             for i in range(n - 1):
                 for j in range(i + 1, n):
                     candidate = route[:i] + list(reversed(route[i:j + 1])) + route[j + 1:]
