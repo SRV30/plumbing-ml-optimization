@@ -291,6 +291,8 @@ def main() -> None:
         "unassigned_tasks": sum(row["status"] == "unassigned" for row in status_rows),
         "active_task_coverage": round(assigned_count / active_tasks, 6) if active_tasks else 0.0,
         "technician_routes_used": used_routes,
+        "total_travel_minutes_including_depot_returns": round(final_travel, 3),
+        "total_service_minutes": sum(int(row["duration_minutes"]) for row in final_rows),
         "initial_travel_minutes_including_depot_returns": round(initial_travel, 3),
         "final_travel_minutes_including_depot_returns": round(final_travel, 3),
         "travel_reduction_minutes": round(initial_travel - final_travel, 3),
