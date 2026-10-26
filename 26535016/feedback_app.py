@@ -34,7 +34,7 @@ EXAMPLES = [
 ]
 
 
-# loaders
+
 @st.cache_resource(show_spinner=False)
 def load_analyzer(model_path: str = MODEL_PATH) -> FeedbackAnalyzer:
     """Load the trained models once and reuse them across reruns."""
@@ -46,7 +46,7 @@ def load_data(data_path: str = DATA_PATH) -> pd.DataFrame:
     return pd.read_csv(data_path)
 
 
-# helpers
+
 def log_feedback(log_path: str | None, r: dict) -> None:
     """Append every submitted review + prediction to a CSV (used by the log tab)."""
     if not log_path:
@@ -89,7 +89,7 @@ def _load_example():
         st.session_state["fb_text"] = choice
 
 
-# UI sections
+
 def render_result(r: dict) -> None:
     """Show one analysis result (internal / manager view)."""
     s, c = r["sentiment"], r["complaint"]
@@ -121,7 +121,7 @@ def render_result(r: dict) -> None:
         st.markdown("**Recommended actions for the business**")
         st.markdown("\n".join(f"{i}. {rec}" for i, rec in enumerate(r["recommendations"], 1)))
 
-    # No key on purpose: a new reply text creates a fresh box for each new analysis.
+    
     st.text_area("Suggested reply to the customer (editable)", value=r["suggested_reply"], height=110)
 
 
@@ -189,7 +189,7 @@ def model_info(analyzer: FeedbackAnalyzer) -> None:
         st.caption("Scores on a held-out 20% test set.")
 
 
-# main
+
 def main() -> None:
     st.set_page_config(page_title="Plumbing Feedback Analyzer", page_icon="🔧", layout="wide")
     st.title("🔧 Plumbing Service - Customer Feedback Analyzer")
