@@ -40,7 +40,7 @@ STATUS_PATH = DATA / "local_search_task_status.csv"
 ROUTES_PATH = DATA / "local_search_routes.csv"
 SUMMARY_PATH = DATA / "local_search_summary.json"
 
-# Keep the search bounded: the first 100-move run produced a validated improvement.
+
 MAX_ACCEPTED_MOVES = 100
 IMPROVEMENT_EPSILON = 1e-6
 
@@ -227,8 +227,8 @@ def main() -> None:
     initial_travel = sum(entry["travel"] for entry in cached.values())
     accepted_moves: list[dict[str, Any]] = []
 
-    # Deterministic first-improvement relocation. One accepted move triggers a
-    # restart so every subsequent candidate is evaluated against current routes.
+    
+    
     for move_index in range(MAX_ACCEPTED_MOVES):
         improved = False
         active_techs = [tech_id for tech_id, route in routes.items() if route]
@@ -253,7 +253,7 @@ def main() -> None:
                     if target_tech == source_tech or target_tech not in routes:
                         continue
                     target_route = routes[target_tech]
-                    # Focus on already-used routes; the move may empty its source route.
+                    
                     if not target_route:
                         continue
                     target_start, target_end = tech_windows[target_tech]
@@ -299,7 +299,7 @@ def main() -> None:
             total_now = sum(entry["travel"] for entry in cached.values())
             print(f"Accepted moves: {len(accepted_moves)}; current travel: {total_now:,.2f} minutes")
 
-    # Re-evaluate all final routes and regenerate complete task-status records.
+    
     status_by_id = {
         int(row["task_id"]): row
         for row in insertion_status.to_dict(orient="records")
