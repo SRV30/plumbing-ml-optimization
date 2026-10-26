@@ -25,7 +25,7 @@ MEMBER = "TDCData.txt"
 TRAVEL_HEADER = "Travel time:"
 PROGRESS_EVERY = 2_000_000
 
-# Examples: task1000task1: 186.0; task1000technician1: 16.0
+
 TRAVEL_RE = re.compile(
     r"^(?P<origin_type>task|technician)(?P<origin_id>\d+)"
     r"(?P<destination_type>task|technician)(?P<destination_id>\d+):\s*"
