@@ -25,7 +25,7 @@ PREDICTIONS_PATH = RESULTS_DIR / "duration_temporal_predictions.csv"
 OUTPUT_PATH = RESULTS_DIR / "duration_error_by_range.csv"
 PLOT_PATH = FIGURES_DIR / "duration_mae_by_range.png"
 
-# Intuitive, increasing ranges for error diagnosis; labels use actual duration.
+
 DURATION_BINS = [0, 15, 30, 60, 120, np.inf]
 DURATION_LABELS = ["1–15", "16–30", "31–60", "61–120", "121+"]
 
