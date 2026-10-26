@@ -633,3 +633,17 @@ python src/improve_local_search_moves.py
 ```
 
 Outputs are written to `data/processed/enhanced_local_search_*`. These files are local/Git-ignored. The enhanced heuristic has not been run against the local dataset in this commit, so no performance improvement is claimed until the generated summary is inspected and independently validated.
+
+
+## Quantile-duration scheduling impact experiment
+
+After running the chronological quantile model and generating a validated insertion baseline, compare Q50 and Q80 estimates in a counterfactual route-insertion experiment:
+
+```powershell
+python -m py_compile 26535024/src/evaluate_quantile_scheduling_impact.py
+python 26535024/src/evaluate_quantile_scheduling_impact.py
+```
+
+The script substitutes rounded-up Q50 or Q80 estimates for chronologically held-out tasks, retains source durations for earlier tasks, and replays the resulting route orders with source-recorded durations to count feasibility violations. It writes scenario route/status CSVs to `data/processed/` and a summary/comparison CSV to `results/`.
+
+This is a counterfactual experiment on telecommunications field-service data. Source-recorded durations are not independently verified realized service times, and results must not be described as real plumbing-business outcomes or savings. Compare assigned tasks, coverage, travel and replay violations together; quantile coverage alone does not guarantee schedule feasibility.
