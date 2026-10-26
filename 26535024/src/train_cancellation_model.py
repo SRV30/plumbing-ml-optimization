@@ -97,8 +97,8 @@ def make_features(row: dict[str, Any]) -> dict[str, float]:
     if window_minutes < 0:
         raise ValueError(f"Task {task_id}: negative time-window length.")
 
-    # Numeric fields are known from the static task instance. The final-state
-    # 'modified' timestamp is not used because it may reveal the target outcome.
+    
+    
     features: dict[str, float] = {
         "duration_minutes": float(row["duration"]),
         "priority": float(row["priority"]),
@@ -115,7 +115,7 @@ def make_features(row: dict[str, Any]) -> dict[str, float]:
         "eligible_technician_count": float(len(eligible_ids)),
     }
     for skill in skills:
-        # One binary feature per skill name.
+        
         features[f"required_skill={skill}"] = 1.0
     return features
 
