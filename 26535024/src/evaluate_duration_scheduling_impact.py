@@ -399,7 +399,7 @@ def main() -> None:
             status["inbound_travel_minutes"] = row["inbound_travel_minutes"]
             status["return_travel_minutes"] = row["return_travel_minutes"]
 
-    # Replay predicted route orders using source-recorded durations.
+    
     route_violations: list[dict[str, Any]] = []
     task_violations: list[dict[str, Any]] = []
     routes_with_violations = 0
