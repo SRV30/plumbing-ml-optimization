@@ -15,6 +15,7 @@ SUMMARY_PATHS = {
     "Route insertion": DATA / "insertion_summary.json",
     "Local search": DATA / "local_search_summary.json",
 }
+ENHANCED_SUMMARY_PATH = DATA / "enhanced_local_search_summary.json"
 
 st.set_page_config(
     page_title="Field-Service Scheduling Dashboard",
@@ -23,7 +24,7 @@ st.set_page_config(
 )
 
 st.title("Field-Service Scheduling Optimizer")
-st.caption("Offline dashboard for the three scheduling experiments in this project.")
+st.caption("Offline dashboard for baseline schedulers, enhanced route-order search, and duration/cancellation experiments.")
 
 st.warning(
     "Dataset limitations: these experiments use telecommunications field-service data, "
@@ -44,6 +45,10 @@ try:
             label: json.loads(path.read_text(encoding="utf-8"))
             for label, path in SUMMARY_PATHS.items()
         }
+        if ENHANCED_SUMMARY_PATH.exists():
+            summaries["Enhanced local search"] = json.loads(
+                ENHANCED_SUMMARY_PATH.read_text(encoding="utf-8")
+            )
         summary_source = "local generated scheduler summaries"
     else:
         if not DEMO_SUMMARY_PATH.exists():
@@ -84,6 +89,8 @@ st.caption(f"Scheduling summary source: {summary_source}")
 
 travel_key = "total_travel_minutes_including_depot_returns"
 method_order = ["Greedy append-only", "Route insertion", "Local search"]
+if "Enhanced local search" in summaries:
+    method_order.append("Enhanced local search")
 records: list[dict[str, object]] = []
 
 for label in method_order:
@@ -124,26 +131,33 @@ tab_overview, tab_routes, tab_ml = st.tabs(
 )
 
 with tab_overview:
-    st.subheader("Current best scheduling result")
-    active_tasks = int(local_search.get("active_tasks", 2233))
-    assigned_tasks = int(local_search["assigned_tasks"])
-    unassigned_tasks = int(local_search["unassigned_tasks"])
-    routes_used = int(local_search["technician_routes_used"])
+    best_label = "Enhanced local search" if "Enhanced local search" in summaries else "Local search"
+    best_summary = summaries[best_label]
+    st.subheader(f"Current best scheduling result — {best_label}")
+    active_tasks = int(best_summary.get("active_tasks", 2233))
+    assigned_tasks = int(best_summary["assigned_tasks"])
+    unassigned_tasks = int(best_summary["unassigned_tasks"])
+    routes_used = int(best_summary["technician_routes_used"])
+    best_travel = float(best_summary[travel_key])
 
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Estimated travel", f"{local_travel:,.0f} min")
+    best_saved_vs_greedy = greedy_travel - best_travel
+    best_saved_pct = (best_saved_vs_greedy / greedy_travel * 100) if greedy_travel else 0.0
+    m1.metric("Estimated travel", f"{best_travel:,.0f} min")
     m2.metric(
         "Travel reduction vs greedy",
-        f"{saved_pct:.2f}%",
-        delta=f"{saved_vs_greedy:,.0f} minutes saved",
+        f"{best_saved_pct:.2f}%",
+        delta=f"{best_saved_vs_greedy:,.0f} minutes saved",
         delta_color="off",
     )
     m3.metric("Active tasks assigned", f"{assigned_tasks:,} / {active_tasks:,}")
     m4.metric("Technician-day routes", f"{routes_used:,}")
 
+    best_saved_vs_insertion = insertion_travel - best_travel
+    best_saved_vs_insertion_pct = (best_saved_vs_insertion / insertion_travel * 100) if insertion_travel else 0.0
     st.markdown(
-        f"Local search also reduces travel by **{saved_vs_insertion:,.0f} minutes "
-        f"({insertion_saved_pct:.2f}%)** compared with route insertion, with the same "
+        f"**{best_label}** reduces travel by **{best_saved_vs_insertion:,.0f} minutes "
+        f"({best_saved_vs_insertion_pct:.2f}%)** compared with route insertion, with the same "
         f"number of assigned tasks."
     )
     st.caption(
@@ -196,9 +210,15 @@ with tab_overview:
     )
 
 with tab_routes:
-    st.subheader("Inspect the saved local-search schedule")
-    routes_path = DATA / "local_search_routes.csv"
-    status_path = DATA / "local_search_task_status.csv"
+    st.subheader("Inspect a saved local-search schedule")
+    enhanced_routes_path = DATA / "enhanced_local_search_routes.csv"
+    enhanced_status_path = DATA / "enhanced_local_search_task_status.csv"
+    if "Enhanced local search" in summaries and enhanced_routes_path.exists():
+        routes_path, status_path = enhanced_routes_path, enhanced_status_path
+        st.caption("Showing the enhanced local-search route order.")
+    else:
+        routes_path = DATA / "local_search_routes.csv"
+        status_path = DATA / "local_search_task_status.csv"
 
     if routes_path.exists():
         try:
@@ -372,7 +392,7 @@ with tab_ml:
 with st.sidebar:
     st.header("About this prototype")
     st.write("**Project:** ML-Based Business Optimization for Plumbing Service Chains")
-    st.write("**Scheduling methods:** greedy, route insertion, relocation local search")
+    st.write("**Scheduling methods:** greedy, route insertion, relocation local search, enhanced swap/2-opt (when available)")
     st.write("**Data:** telecommunications field-service instance")
     st.divider()
     st.markdown("**How to interpret the results**")
