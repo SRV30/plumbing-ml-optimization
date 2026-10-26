@@ -276,8 +276,8 @@ def main() -> None:
                     continue
 
                 marginal_travel = proposed_eval["travel_minutes"] - old_eval["travel_minutes"]
-                # Prefer lower marginal travel, then shorter current route, then a
-                # stable technician ID and insertion position for reproducibility.
+                
+                
                 score = (
                     marginal_travel,
                     len(route),
@@ -310,7 +310,7 @@ def main() -> None:
         technician_routes[technician_id] = best["route"]
         assigned += 1
 
-        # Temporarily set status; route sequence/times are finalized after all insertions.
+        
         status_by_id[task["task_id"]] = {
             "task_id": task["task_id"], "cancelled": False,
             "status": "assigned", "reason": "",
@@ -352,7 +352,7 @@ def main() -> None:
     route_rows.sort(key=lambda row: (row["technician_id"], row["route_sequence"]))
     status_rows = [status_by_id[task_id] for task_id in sorted(status_by_id)]
 
-    # Internal accounting assertions prevent incomplete results from being written.
+    
     if len(status_rows) != len(tasks_by_id):
         raise RuntimeError("Status output does not include exactly one row per source task.")
     if sum(row["status"] == "assigned" for row in status_rows) != assigned:
