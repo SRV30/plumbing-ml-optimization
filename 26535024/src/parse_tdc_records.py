@@ -171,7 +171,7 @@ def main() -> None:
                                     f"Line {line_number}: unexpected content in {section}: {line[:250]}"
                                 )
                         except (ValueError, TypeError) as error:
-                            # Keep the full source row for debugging, truncated only for terminal output.
+                            
                             preview = line[:2500]
                             if len(line) > 2500:
                                 preview += "... [record truncated]"
