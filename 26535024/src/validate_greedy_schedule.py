@@ -89,7 +89,7 @@ def main() -> None:
     print(f"Schedule status rows: {len(schedule):,}")
     print(f"Route assignment rows: {len(routes):,}")
 
-    # Table-level accounting.
+    
     check(schedule["task_id"].is_unique, "Task-status table has duplicate task IDs.")
     check(
         set(status_by_id) == set(task_by_id),
@@ -142,7 +142,7 @@ def main() -> None:
             except (ValueError, TypeError, json.JSONDecodeError):
                 errors.append(f"Task {task_id}: could not verify technician eligibility.")
 
-    # Route-level validation in the scheduler's recorded sequence.
+    
     route_groups = 0
     for technician_id, group in routes.groupby("technician_id"):
         try:
@@ -224,14 +224,14 @@ def main() -> None:
                     f"Technician {tech_id}: final return trip finishes after shift end.",
                 )
 
-            # Return travel should be blank for all earlier route rows.
+            
             for nonfinal in ordered.iloc[:-1].to_dict("records"):
                 check(
                     str(nonfinal["return_travel_minutes"]).strip() == "",
                     f"Technician {tech_id}: a non-final task has a return-travel value.",
                 )
 
-    # Summary consistency.
+    
     computed_assigned = int((schedule["status"] == "assigned").sum())
     computed_cancelled = int((schedule["status"] == "excluded_cancelled").sum())
     computed_unassigned = int((schedule["status"] == "unassigned").sum())
