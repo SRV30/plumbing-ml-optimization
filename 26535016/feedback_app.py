@@ -107,7 +107,7 @@ def render_result(r: dict) -> None:
     box(f"**Priority:** {PRIORITY_TEXT[priority]}" + (f"  \n**Owner team:** {r['team']}" if r["team"] else ""))
 
     if r["needs_human_review"]:
-        st.warning("The models are not very confident about this review - please have a person check it.")
+        st.caption("Confidence is low for this result; manual review is recommended.")
 
     left, right = st.columns(2)
     with left:
