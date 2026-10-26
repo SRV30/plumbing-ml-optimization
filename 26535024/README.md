@@ -647,3 +647,61 @@ python 26535024/src/evaluate_quantile_scheduling_impact.py
 The script substitutes rounded-up Q50 or Q80 estimates for chronologically held-out tasks, retains source durations for earlier tasks, and replays the resulting route orders with source-recorded durations to count feasibility violations. It writes scenario route/status CSVs to `data/processed/` and a summary/comparison CSV to `results/`.
 
 This is a counterfactual experiment on telecommunications field-service data. Source-recorded durations are not independently verified realized service times, and results must not be described as real plumbing-business outcomes or savings. Compare assigned tasks, coverage, travel and replay violations together; quantile coverage alone does not guarantee schedule feasibility.
+
+
+## Final scheduling and duration-experiment comparison (26 October 2026)
+
+The current local runs support the following results. These numbers were reported from the prepared local dataset; the generated processed CSVs and matrices remain local and are not committed.
+
+### Validated route-optimization sequence
+
+| Method | Assigned tasks | Routes used | Travel minutes | Comparison |
+|---|---:|---:|---:|---|
+| Greedy append-only baseline | 2,209 | 748 | 17,783 | Initial scheduling baseline |
+| Route insertion | 2,209 | 643 | 14,627 | 3,156 fewer travel minutes than greedy |
+| Relocation local search | 2,209 | 637 | 14,239 | 388 fewer travel minutes than insertion |
+| Enhanced local search (relocation + intra-route moves) | 2,209 | 637 | 14,174 | 65 fewer travel minutes than its 14,239-minute starting schedule |
+
+The enhanced local-search schedule passed independent validation: 2,677 source tasks, 2,677 status rows, 2,209 assignment rows, 637 route groups, 28,261 checks and zero validation errors. The travel reduction from greedy to the enhanced schedule is 3,609 minutes (about 20.3%). The enhanced search's additional reduction relative to its starting local-search schedule is 0.46%.
+
+These are heuristic results, not proof of a globally optimal schedule. The validation covers the constraints implemented in the validator and does not establish real-world business savings.
+
+### Duration prediction and counterfactual scheduling
+
+| Scenario | Duration MAE | Underprediction rate | Assigned tasks | Coverage | Routes | Travel minutes | Routes with replay violations |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Source-duration insertion baseline | — | — | 2,209 | 98.93% | 643 | 14,627 | 0 |
+| Q50 estimates for held-out tasks | 27.54 min (Gradient Boosting Q50 model) | — | 2,214 | 99.15% | 626 | 14,340 | 57 |
+| Q80 estimates for held-out tasks | — | — | 2,204 | 98.70% | 648 | 14,765 | 26 |
+| Raw Ridge calibrated-duration experiment | 24.80 min (raw prediction) | 38.99% | — | — | — | — | — |
+| Buffered Ridge scheduling | 57.29 min (buffered prediction) | 10.63% | 2,198 | 98.43% | 668 | 15,855 | 11 |
+
+The Q50/Q80 schedule experiment uses separate quantile outputs, while the calibrated Ridge experiment adds a 46-minute buffer based on a calibration residual quantile. They are counterfactual experiments and should not be treated as directly interchangeable production strategies.
+
+### Interpretation and decision
+
+- The strongest measured travel result is the enhanced local-search schedule at 14,174 minutes while preserving the 2,209-task assignment set. It passed the independent validator.
+- Raw Ridge has the lower prediction error; buffered Ridge materially reduces underprediction but increases MAE and makes the schedule less travel-efficient in this experiment.
+- Q50 has slightly higher coverage and lower planned travel than the source-duration insertion baseline, but 57 routes develop violations when replayed with source-recorded durations. Q80 has 26 such routes; the buffered Ridge scenario has 11.
+- Replay violations are stress-test findings obtained by re-evaluating predicted route orders with source-recorded durations. They are not observed real-world failures, and zero violations in a baseline is not proof that source durations represent realized service times.
+- Do not select a duration model from prediction metrics alone. Consider assignment coverage, travel, route count, replay violations and the intended operational risk together.
+
+### Data and reproducibility limitations
+
+The benchmark describes telecommunications field service, not a plumbing company. The duration target's operational meaning and feature availability at the intended scheduling time must be confirmed before making operational claims. The scheduling heuristics are not exact optimizers, and no actual plumbing-business cost, delay, or productivity improvement has been demonstrated.
+
+To reproduce the experiments from the repository root after preparing the local dataset and travel matrices:
+
+```powershell
+python src/run_greedy_scheduler.py
+python src/run_insertion_scheduler.py
+python src/run_local_search_scheduler.py
+python 26535024/src/train_duration_quantile_model.py
+python 26535024/src/improve_local_search_moves.py
+python 26535024/src/validate_local_search_schedule.py --schedule enhanced
+python 26535024/src/evaluate_quantile_scheduling_impact.py
+python 26535024/src/train_calibrated_duration_model.py
+python 26535024/src/evaluate_calibrated_duration_scheduling_impact.py
+```
+
+Only rerun the scheduling commands if you intend to regenerate their local outputs. The validated enhanced schedule and duration experiments described above are the reported runs as of 26 October 2026.
