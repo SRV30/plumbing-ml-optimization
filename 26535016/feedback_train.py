@@ -25,7 +25,7 @@ SEED = 42
 
 
 def make_classifier():
-    # CalibratedClassifierCV adds predict_proba() to LinearSVC (confidence scores).
+    
     return CalibratedClassifierCV(LinearSVC(C=0.5, class_weight="balanced"), cv=3)
 
 
@@ -67,7 +67,7 @@ def main():
     df["text"] = df["review_text"].map(clean_text)
     print(f"Loaded {len(df):,} reviews")
 
-    # One stratified split, shared by all three models.
+    
     train, test = train_test_split(df, test_size=0.2, random_state=SEED, stratify=df["complaint_category"])
 
     vec = TfidfVectorizer(ngram_range=(1, 2), min_df=2, sublinear_tf=True)
@@ -81,14 +81,14 @@ def main():
     cat = make_classifier().fit(X_train, train["complaint_category"])
     evaluate("category", cat, X_test, test["complaint_category"], reports_dir, metrics)
 
-    # Severity only exists for complaint rows.
+    
     tr_c = train[train["complaint_category"] != "none"].dropna(subset=["complaint_severity"])
     te_c = test[test["complaint_category"] != "none"].dropna(subset=["complaint_severity"])
     sev = make_classifier().fit(vec.transform(tr_c["text"]), tr_c["complaint_severity"])
     evaluate("severity", sev, vec.transform(te_c["text"]), te_c["complaint_severity"], reports_dir, metrics)
 
     if not args.no_refit:
-        # Final models use ALL data (metrics above are still from the held-out test set).
+        
         print("\nRefitting final models on the full dataset ...")
         X_all = vec.fit_transform(df["text"])
         sent = make_classifier().fit(X_all, df["sentiment"])
