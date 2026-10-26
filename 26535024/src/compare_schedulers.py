@@ -30,6 +30,7 @@ SUMMARY_FILES = {
     "Route insertion": DATA / "insertion_summary.json",
     "Local search": DATA / "local_search_summary.json",
 }
+ENHANCED_SUMMARY = DATA / "enhanced_local_search_summary.json"
 CSV_OUTPUT = DATA / "scheduler_comparison.csv"
 
 
@@ -46,6 +47,20 @@ def main() -> None:
     for label, path in SUMMARY_FILES.items():
         summaries[label] = json.loads(path.read_text(encoding="utf-8"))
 
+    if ENHANCED_SUMMARY.exists():
+        enhanced = json.loads(ENHANCED_SUMMARY.read_text(encoding="utf-8"))
+        # Older enhanced summaries can omit service time; derive it from the route CSV.
+        if enhanced.get("total_service_minutes") is None:
+            enhanced_routes_path = DATA / "enhanced_local_search_routes.csv"
+            if enhanced_routes_path.exists():
+                with enhanced_routes_path.open("r", encoding="utf-8", newline="") as handle:
+                    enhanced_rows = list(csv.DictReader(handle))
+                if enhanced_rows and "duration_minutes" in enhanced_rows[0]:
+                    enhanced["total_service_minutes"] = sum(
+                        float(row.get("duration_minutes") or 0) for row in enhanced_rows
+                    )
+        summaries["Enhanced local search"] = enhanced
+
     metrics = [
         ("assigned_tasks", "Tasks assigned", "count"),
         ("unassigned_tasks", "Tasks unassigned", "count"),
@@ -60,6 +75,8 @@ def main() -> None:
         "Route insertion": "route_insertion",
         "Local search": "local_search",
     }
+    if "Enhanced local search" in summaries:
+        method_columns["Enhanced local search"] = "enhanced_local_search"
     rows: list[dict[str, object]] = []
     for key, label, unit in metrics:
         row: dict[str, object] = {"metric": label, "unit": unit}
@@ -71,10 +88,15 @@ def main() -> None:
         row["local_search_minus_greedy"] = (
             values["Local search"] - values["Greedy append-only"]
         )
+        if "Enhanced local search" in values:
+            row["enhanced_local_search_minus_greedy"] = (
+                values["Enhanced local search"] - values["Greedy append-only"]
+            )
         if key == "total_travel_minutes_including_depot_returns":
             greedy_value = values["Greedy append-only"]
+            best_method = min(values, key=values.get)
             row["travel_reduction_percent_vs_greedy"] = (
-                (greedy_value - values["Local search"]) / greedy_value * 100
+                (greedy_value - values[best_method]) / greedy_value * 100
                 if greedy_value else 0.0
             )
         else:
@@ -88,8 +110,14 @@ def main() -> None:
         writer.writeheader()
         writer.writerows(rows)
 
-    labels = list(SUMMARY_FILES.keys())
-    short_labels = ["Greedy", "Insertion", "Local search"]
+    labels = list(summaries.keys())
+    short_label_map = {
+        "Greedy append-only": "Greedy",
+        "Route insertion": "Insertion",
+        "Local search": "Local search",
+        "Enhanced local search": "Enhanced local search",
+    }
+    short_labels = [short_label_map[label] for label in labels]
 
     # Separate figures make each comparison readable in the final report.
     travel_values = [
@@ -138,11 +166,16 @@ def main() -> None:
     fig.savefig(routes_figure, dpi=180)
     plt.close(fig)
 
-    greedy_travel = travel_values[0]
-    insertion_travel = travel_values[1]
-    local_search_travel = travel_values[2]
-    reduction_vs_insertion = insertion_travel - local_search_travel
-    reduction_vs_greedy = greedy_travel - local_search_travel
+    greedy_travel = float(summaries["Greedy append-only"]["total_travel_minutes_including_depot_returns"])
+    insertion_travel = float(summaries["Route insertion"]["total_travel_minutes_including_depot_returns"])
+    local_search_travel = float(summaries["Local search"]["total_travel_minutes_including_depot_returns"])
+    best_label = min(
+        labels,
+        key=lambda label: float(summaries[label]["total_travel_minutes_including_depot_returns"]),
+    )
+    best_travel = float(summaries[best_label]["total_travel_minutes_including_depot_returns"])
+    reduction_vs_insertion = insertion_travel - best_travel
+    reduction_vs_greedy = greedy_travel - best_travel
     reduction_vs_greedy_pct = (
         reduction_vs_greedy / greedy_travel * 100 if greedy_travel else 0.0
     )
@@ -152,12 +185,13 @@ def main() -> None:
     print(f"Greedy travel time:       {greedy_travel:,.2f} minutes")
     print(f"Insertion travel time:    {insertion_travel:,.2f} minutes")
     print(f"Local-search travel time: {local_search_travel:,.2f} minutes")
+    print(f"Best method ({best_label}) travel time: {best_travel:,.2f} minutes")
     print(
-        f"Local-search reduction vs greedy: {reduction_vs_greedy:,.2f} minutes "
+        f"Best-method reduction vs greedy: {reduction_vs_greedy:,.2f} minutes "
         f"({reduction_vs_greedy_pct:.2f}%)"
     )
     print(
-        f"Local-search reduction vs insertion: {reduction_vs_insertion:,.2f} minutes "
+        f"{best_label} reduction vs insertion: {reduction_vs_insertion:,.2f} minutes "
         f"({(reduction_vs_insertion / insertion_travel * 100) if insertion_travel else 0.0:.2f}%)"
     )
     print("\nPer-method results:")
