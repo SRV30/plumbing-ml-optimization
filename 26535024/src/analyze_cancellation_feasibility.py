@@ -85,7 +85,7 @@ def main() -> None:
     crosstab.index.name = "modified_field_status"
     crosstab.to_csv(CROSSTAB_PATH)
 
-    # Summarize each skill without flattening the entire technician eligibility graph.
+    
     records: list[dict[str, Any]] = []
     for _, row in tasks.iterrows():
         skills = json.loads(row["skills_json"])
