@@ -27,7 +27,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from run_local_search_scheduler import evaluate_route, parse_bool, parse_json_list
+from run_local_search_scheduler import evaluate_route, parse_bool, parse_json_list as parse_eligible_list
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "processed"
@@ -63,6 +63,19 @@ STATUS_FIELDS = [
     "inbound_travel_minutes", "return_travel_minutes",
     "duration_minutes", "priority", "penalty",
 ]
+
+
+def parse_json_list(value: Any, field: str, task_id: int) -> list:
+    """Parse a JSON list; fields can contain skill labels or technician IDs."""
+    try:
+        parsed = json.loads(str(value))
+    except (json.JSONDecodeError, TypeError) as error:
+        raise ValueError(f"Task {task_id}: invalid {field}: {error}") from error
+    if not isinstance(parsed, list):
+        raise ValueError(f"Task {task_id}: {field} must be a JSON list.")
+    if field == "relevant_technician_ids_json" and not all(isinstance(item, int) for item in parsed):
+        raise ValueError(f"Task {task_id}: eligible technician IDs must be integers.")
+    return parsed
 
 
 def write_csv(path: Path, fields: list[str], rows: list[dict[str, Any]]) -> None:
