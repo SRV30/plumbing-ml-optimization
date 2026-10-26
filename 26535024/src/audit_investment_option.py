@@ -42,8 +42,8 @@ def main() -> None:
     print("============================")
     print(f"Technician rows: {len(tech):,}")
     print(f"Unique technician IDs: {tech['technician_id'].nunique():,}")
-    print(f"True:  {int((valid == True).sum()):,}")  # noqa: E712
-    print(f"False: {int((valid == False).sum()):,}")  # noqa: E712
+    print(f"True:  {int((valid == True).sum()):,}")  
+    print(f"False: {int((valid == False).sum()):,}")  
     print(f"Missing/invalid flag values: {invalid_count:,}")
 
     starts = pd.to_datetime(tech["time_window_start"], errors="coerce")
@@ -86,8 +86,8 @@ def main() -> None:
         print(f"Could not inspect source ZIP: {error}")
         return
 
-    true_count = int((valid == True).sum())  # noqa: E712
-    false_count = int((valid == False).sum())  # noqa: E712
+    true_count = int((valid == True).sum())  
+    false_count = int((valid == False).sum())  
     if true_count == 710 and false_count == 720:
         print("\nCount pattern matches 710 True / 720 False.")
         print("This supports a possible explanation for the 720 vs. 1,430 count,")
