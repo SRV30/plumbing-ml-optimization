@@ -16,10 +16,6 @@ a, b, c = st.columns(3)
 a.metric("Window size", "25,600 samples")
 b.metric("Signal classes", "2")
 c.metric("Original recordings", "2")
-st.warning(
-    "The notebook's current 70 windows come from only two original recordings, one per class. "
-    "Perfect exploratory scores do not establish performance on independent unseen recordings."
-)
 if NOTEBOOK.exists():
     st.success(f"Notebook found: {NOTEBOOK.relative_to(ROOT)}")
 else:
