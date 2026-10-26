@@ -10,6 +10,7 @@ No input or output files are modified.
 
 from __future__ import annotations
 
+import argparse
 import json
 import math
 from pathlib import Path
@@ -22,9 +23,18 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "processed"
 TASKS_PATH = DATA / "tasks.csv"
 TECHNICIANS_PATH = DATA / "technicians.csv"
-SCHEDULE_PATH = DATA / "local_search_task_status.csv"
-ROUTES_PATH = DATA / "local_search_routes.csv"
-SUMMARY_PATH = DATA / "local_search_summary.json"
+SCHEDULE_PATHS = {
+    "local": (
+        DATA / "local_search_task_status.csv",
+        DATA / "local_search_routes.csv",
+        DATA / "local_search_summary.json",
+    ),
+    "enhanced": (
+        DATA / "enhanced_local_search_task_status.csv",
+        DATA / "enhanced_local_search_routes.csv",
+        DATA / "enhanced_local_search_summary.json",
+    ),
+}
 T2T_PATH = DATA / "task_to_task.npy"
 T2TECH_PATH = DATA / "task_to_technician.npy"
 TECH2T_PATH = DATA / "technician_to_task.npy"
@@ -48,8 +58,20 @@ def close(a: float, b: float, tolerance: float = TOLERANCE_MINUTES) -> bool:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Independently validate a generated technician schedule."
+    )
+    parser.add_argument(
+        "--schedule",
+        choices=sorted(SCHEDULE_PATHS),
+        default="local",
+        help="Which schedule to validate: 'local' (default) or 'enhanced'.",
+    )
+    args = parser.parse_args()
+    schedule_path, routes_path, summary_path = SCHEDULE_PATHS[args.schedule]
+
     required = [
-        TASKS_PATH, TECHNICIANS_PATH, SCHEDULE_PATH, ROUTES_PATH, SUMMARY_PATH,
+        TASKS_PATH, TECHNICIANS_PATH, schedule_path, routes_path, summary_path,
         T2T_PATH, T2TECH_PATH, TECH2T_PATH,
     ]
     missing_files = [path for path in required if not path.exists()]
@@ -62,9 +84,9 @@ def main() -> None:
 
     tasks = pd.read_csv(TASKS_PATH)
     technicians = pd.read_csv(TECHNICIANS_PATH)
-    schedule = pd.read_csv(SCHEDULE_PATH, keep_default_na=False)
-    routes = pd.read_csv(ROUTES_PATH, keep_default_na=False)
-    summary = json.loads(SUMMARY_PATH.read_text(encoding="utf-8"))
+    schedule = pd.read_csv(schedule_path, keep_default_na=False)
+    routes = pd.read_csv(routes_path, keep_default_na=False)
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
 
     t2t = np.load(T2T_PATH, mmap_mode="r")
     t2tech = np.load(T2TECH_PATH, mmap_mode="r")
@@ -83,8 +105,10 @@ def main() -> None:
         if not condition:
             errors.append(message)
 
-    print("LOCAL-SEARCH SCHEDULE VALIDATION")
-    print("==========================")
+    print(f"{args.schedule.upper()} SCHEDULE VALIDATION")
+    print("=" * (len(args.schedule) + 22))
+    print(f"Schedule status file: {schedule_path.name}")
+    print(f"Route file: {routes_path.name}")
     print(f"Task source rows: {len(tasks):,}")
     print(f"Schedule status rows: {len(schedule):,}")
     print(f"Route assignment rows: {len(routes):,}")
@@ -240,6 +264,25 @@ def main() -> None:
     check(computed_unassigned == int(summary["unassigned_tasks"]), "Summary unassigned count mismatch.")
     check(route_groups == int(summary["technician_routes_used"]), "Summary route count mismatch.")
 
+    # Validate travel totals against the route rows, including depot legs.
+    if "inbound_travel_minutes" in routes.columns and "return_travel_minutes" in routes.columns:
+        inbound_total = pd.to_numeric(
+            routes["inbound_travel_minutes"], errors="coerce"
+        ).fillna(0.0).sum()
+        return_total = pd.to_numeric(
+            routes["return_travel_minutes"], errors="coerce"
+        ).fillna(0.0).sum()
+        computed_travel = float(inbound_total + return_total)
+        expected_travel = summary.get(
+            "final_travel_minutes_including_depot_returns",
+            summary.get("total_travel_minutes_including_depot_returns"),
+        )
+        if expected_travel is not None:
+            check(
+                close(computed_travel, float(expected_travel), tolerance=1e-2),
+                "Summary total travel does not match the route-table travel legs.",
+            )
+
     print(f"Route groups validated: {route_groups:,}")
     print(f"Checks performed: {checks:,}")
     print(f"Validation errors: {len(errors):,}")
@@ -251,7 +294,7 @@ def main() -> None:
         print("\nValidation FAILED. Do not cite baseline results as verified yet.")
     else:
         print("\nVALIDATION PASSED")
-        print("Task coverage and recorded routes passed the implemented consistency checks.")
+        print("Task accounting, eligibility, route timing, travel legs, and summary consistency passed.")
         print("This validates internal feasibility checks, not global optimality.")
 
 
