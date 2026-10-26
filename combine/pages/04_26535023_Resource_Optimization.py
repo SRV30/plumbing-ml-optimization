@@ -43,7 +43,7 @@ def parse_config(path: Path):
         if "Skill investment cost:" in line:
             config["skill_cost"] = float(line.split(":", 1)[1].strip())
         elif "Skill investment group:" in line:
-            match = re.search(r"Skill investment group:\\s*(\\d+):\\s*Set\\(\\[(.*?)\\]\\)", line)
+            match = re.search(r"Skill investment group:\s*(\d+):\s*Set\(\[(.*?)\]\)", line)
             if match:
                 config["skill_groups"][int(match.group(1))] = [
                     s.strip().replace('"', "") for s in match.group(2).split(",") if s.strip()
@@ -56,22 +56,22 @@ def parse_tasks(path: Path):
         if not line.startswith("Task id"):
             continue
         get = lambda pattern: re.search(pattern, line)
-        tid = int(get(r"Task id (\\d+)").group(1))
-        skills_raw = re.findall(r"skills \\[(.*?)\\]", line)[0]
+        tid = int(get(r"Task id (\d+)").group(1))
+        skills_raw = re.findall(r"skills \[(.*?)\]", line)[0]
         skills = [s.strip().replace('"', "") for s in skills_raw.split(",") if s.strip()]
-        tw = re.findall(r"time window \\[(.*?), (.*?)\\]", line)[0]
+        tw = re.findall(r"time window \[(.*?), (.*?)\]", line)[0]
         tw_start, tw_end = datetime.fromisoformat(tw[0]), datetime.fromisoformat(tw[1])
-        created = datetime.fromisoformat(get(r"created ([\\d\\-T:]+)").group(1))
-        tech_match = get(r"relevant technician ids \\[(.*?)\\]")
+        created = datetime.fromisoformat(get(r"created ([\d\-T:]+)").group(1))
+        tech_match = get(r"relevant technician ids \[(.*?)\]")
         rows.append({
             "task_id": tid,
             "primary_skill": skills[0] if skills else "None",
             "skills": skills,
             "num_skills": len(skills),
-            "duration": int(get(r"duration (\\d+)").group(1)),
+            "duration": int(get(r"duration (\d+)").group(1)),
             "tw_duration": (tw_end - tw_start).total_seconds() / 60,
-            "priority": int(get(r"priority (\\d+)").group(1)),
-            "penalty": float(get(r"penalty ([\\d\\.]+)").group(1)),
+            "priority": int(get(r"priority (\d+)").group(1)),
+            "penalty": float(get(r"penalty ([\d\.]+)").group(1)),
             "lead_time": (tw_start - created).total_seconds() / 3600,
             "num_techs": len(tech_match.group(1).split(",")) if tech_match and tech_match.group(1).strip() else 0,
             "cancelled": int(get(r"cancelled (true|false)").group(1) == "true"),
@@ -83,8 +83,8 @@ def parse_technicians(path: Path):
     for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
         if not line.startswith("Technician id"):
             continue
-        tid = int(re.search(r"Technician id (\\d+)", line).group(1))
-        skills_raw = re.findall(r"skills \\[(.*?)\\]", line)[0]
+        tid = int(re.search(r"Technician id (\d+)", line).group(1))
+        skills_raw = re.findall(r"skills \[(.*?)\]", line)[0]
         skills = [s.strip().replace('"', "") for s in skills_raw.split(",") if s.strip()]
         rows.append({"tech_id": tid, "skills": skills, "can_invest": bool(re.search(r"investment option true", line))})
     return pd.DataFrame(rows)
