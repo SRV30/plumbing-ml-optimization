@@ -141,7 +141,7 @@ def main() -> None:
     initial_travel = float(sum(item["travel"] for item in cached.values()))
     accepted_moves: list[dict[str, Any]] = []
 
-    # Deterministic first-improvement search; only task order changes.
+    
     for iteration in range(MAX_ACCEPTED_MOVES):
         improved = False
         for tech_id in sorted(routes):
@@ -152,7 +152,7 @@ def main() -> None:
             shift_start, shift_end = tech_windows[tech_id]
             old_eval = cached[tech_id]
 
-            # Pairwise swap neighborhood.
+            
             candidates = (
                 ("swap", route[:i] + [route[j]] + route[i + 1:j] + [route[i]] + route[j + 1:])
                 for i in range(n - 1)
@@ -179,7 +179,7 @@ def main() -> None:
             if improved:
                 break
 
-            # 2-opt-style reversal of every contiguous segment.
+            
             for i in range(n - 1):
                 for j in range(i + 1, n):
                     candidate = route[:i] + list(reversed(route[i:j + 1])) + route[j + 1:]
@@ -214,7 +214,7 @@ def main() -> None:
                 f"travel: {sum(item['travel'] for item in cached.values()):,.2f} minutes"
             )
 
-    # Re-evaluate every route and verify coverage/eligibility before writing.
+    
     route_rows: list[dict[str, Any]] = []
     final_travel = 0.0
     for tech_id, route in routes.items():
