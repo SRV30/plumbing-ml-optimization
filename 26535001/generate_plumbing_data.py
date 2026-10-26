@@ -34,9 +34,9 @@ N = len(dates)
 doy = dates.dayofyear.values
 t_years = (dates - dates[0]).days.values / 365.25
 
-# ------------------------------------------------------------------ branches
+
 branches = pd.DataFrame([
-    # id, city, state, climate, base daily calls, mean winter temp C, summer temp C, rain intensity, open date, households served (k)
+    
     ["BR01", "Minneapolis", "MN", "cold",      34, -9,  27, 1.0, "2015-04-01", 410],
     ["BR02", "Chicago",     "IL", "cold",      48, -4,  28, 1.1, "2012-06-15", 620],
     ["BR03", "Denver",      "CO", "cold-dry",  29, -1,  31, 0.6, "2017-03-01", 350],
@@ -44,16 +44,16 @@ branches = pd.DataFrame([
     ["BR05", "Dallas",      "TX", "hot",       44,  9,  35, 1.0, "2013-02-20", 560],
     ["BR06", "Phoenix",     "AZ", "desert",    31, 13,  41, 0.3, "2016-11-05", 390],
     ["BR07", "Seattle",     "WA", "wet",       27,  5,  25, 1.6, "2018-05-12", 330],
-    ["BR08", "Charlotte",   "NC", "humid",     22,  6,  31, 1.3, "2024-07-01", 260],  # new branch
+    ["BR08", "Charlotte",   "NC", "humid",     22,  6,  31, 1.3, "2024-07-01", 260],  
 ], columns=["branch_id", "city", "state", "climate_zone", "base_daily_calls",
             "winter_temp_c", "summer_temp_c", "rain_factor", "open_date", "households_k"])
 branches["open_date"] = pd.to_datetime(branches["open_date"])
 branches["annual_growth"] = rng.uniform(0.03, 0.10, len(branches)).round(3)
-branches.loc[branches.branch_id == "BR08", "annual_growth"] = 0.0  # ramp handled separately
+branches.loc[branches.branch_id == "BR08", "annual_growth"] = 0.0  
 branches["technicians_fte"] = (branches.base_daily_calls / 3.2).round().astype(int)
 branches["avg_housing_age_yrs"] = rng.integers(22, 55, len(branches))
 
-# ------------------------------------------------------------------ calendar
+
 def thanksgiving(y):
     nov = pd.date_range(f"{y}-11-01", f"{y}-11-30")
     return nov[nov.weekday == 3][3]
@@ -89,17 +89,17 @@ cal["is_christmas_week"] = ((cal.month == 12) & (dates.day >= 22) & (dates.day <
 cal["is_school_holiday"] = (((cal.month == 7) | ((cal.month == 6) & (dates.day > 10)) |
                              ((cal.month == 8) & (dates.day < 20)) | (cal.is_christmas_week == 1))).astype(int)
 
-# ------------------------------------------------------------------ weather
+
 weather_rows = []
 for _, b in branches.iterrows():
     amp = (b.summer_temp_c - b.winter_temp_c) / 2
     mean = (b.summer_temp_c + b.winter_temp_c) / 2
     seasonal = mean - amp * np.cos(2 * np.pi * (doy - 15) / 365.25)
-    # AR(1) anomalies -> realistic cold snaps / heat waves
+    
     anom = np.zeros(N)
     for i in range(1, N):
         anom[i] = 0.8 * anom[i - 1] + rng.normal(0, 2.6)
-    # inject a few severe arctic blasts in cold/mid climates (e.g. Dec-2022-style events)
+    
     for d0 in ["2023-02-02", "2024-01-14", "2025-01-20", "2025-12-18"]:
         idx = dates.get_loc(pd.Timestamp(d0))
         sev = {"cold": 14, "cold-dry": 15, "hot": 13, "humid": 10, "wet": 8, "desert": 4}[b.climate_zone]
@@ -113,7 +113,7 @@ for _, b in branches.iterrows():
     rain_prob = np.clip(0.28 * b.rain_factor * wet_season, 0.02, 0.75)
     rained = rng.random(N) < rain_prob
     precip = np.where(rained, rng.gamma(1.1, 6.5 * b.rain_factor, N), 0.0)
-    snow = np.where((tavg < 0) & rained, precip * 1.1 / 10, 0.0)  # cm-ish
+    snow = np.where((tavg < 0) & rained, precip * 1.1 / 10, 0.0)  
     w = pd.DataFrame({
         "date": dates, "branch_id": b.branch_id,
         "temp_avg_c": tavg.round(1), "temp_min_c": tmin.round(1), "temp_max_c": tmax.round(1),
@@ -125,26 +125,26 @@ weather["is_freeze"] = (weather.temp_min_c <= -6).astype(int)
 weather["is_hard_freeze"] = (weather.temp_min_c <= -12).astype(int)
 weather["heavy_rain"] = (weather.precip_mm >= 25).astype(int)
 weather["heatwave"] = (weather.temp_max_c >= 38).astype(int)
-# sensor gaps
+
 gap = rng.random(len(weather)) < 0.006
 weather.loc[gap, ["temp_avg_c", "temp_min_c", "temp_max_c"]] = np.nan
 gap2 = rng.random(len(weather)) < 0.004
 weather.loc[gap2, "precip_mm"] = np.nan
 
-# ------------------------------------------------------------------ marketing
+
 mk_rows = []
 for _, b in branches.iterrows():
     base_spend = b.base_daily_calls * 9
     spend = base_spend * (1 + 0.25 * np.sin(2 * np.pi * (doy - 80) / 365.25)) * rng.lognormal(0, 0.25, N)
     spend[dates.weekday >= 5] *= 0.6
-    # campaign bursts
+    
     promo = np.zeros(N, dtype=int)
     for _ in range(9):
         s = rng.integers(0, N - 14)
         L = rng.integers(5, 15)
         promo[s:s + L] = 1
         spend[s:s + L] *= 1.8
-    # every fall: water heater tune-up promo
+    
     for y in range(2023, 2026):
         m = (dates >= f"{y}-10-01") & (dates <= f"{y}-10-21")
         promo[m] = 1
@@ -155,9 +155,9 @@ for _, b in branches.iterrows():
                                  "marketing_spend_usd": spend.round(2), "promo_active": promo}))
 marketing = pd.concat(mk_rows, ignore_index=True)
 
-# ------------------------------------------------------------------ services
+
 services = pd.DataFrame([
-    # name, category, share, emergency, avg ticket $, avg duration h
+    
     ["drain_cleaning",      "drain",     0.27, 0.35, 260,  1.3],
     ["leak_repair",         "repair",    0.18, 0.45, 340,  1.6],
     ["water_heater",        "install",   0.14, 0.40, 1450, 3.5],
@@ -171,7 +171,7 @@ services = pd.DataFrame([
 
 def annual_profile(svc, climate):
     x = 2 * np.pi * (doy - 15) / 365.25
-    winter = np.cos(x)  # +1 mid-Jan, -1 mid-July
+    winter = np.cos(x)  
     cold = climate in ("cold", "cold-dry")
     p = {
         "drain_cleaning":    1 + 0.08 * winter,
@@ -186,7 +186,7 @@ def annual_profile(svc, climate):
     }[svc]
     return np.clip(p, 0.05, None)
 
-DOW = {  # Mon..Sun multipliers for scheduled work
+DOW = {  
     "scheduled": np.array([1.28, 1.12, 1.06, 1.03, 0.98, 0.42, 0.22]),
     "emergency": np.array([1.10, 1.02, 1.00, 1.00, 1.02, 0.90, 0.86]),
 }
@@ -205,20 +205,20 @@ for _, b in branches.iterrows():
     precip = w.precip_mm.fillna(0).values
     open_mask = dates >= b.open_date
 
-    # growth: exponential trend; new branch ramps up with logistic curve
+    
     if b.branch_id == "BR08":
         days_open = np.clip((dates - b.open_date).days.values, 0, None)
         level = 1 / (1 + np.exp(-(days_open - 120) / 45))
     else:
         level = (1 + b.annual_growth) ** t_years
-    # macro shock: soft quarter in early 2024
+    
     level = level * np.where((dates >= "2024-02-01") & (dates <= "2024-04-30"), 0.93, 1.0)
 
     ad = adstock(m.marketing_spend_usd.values)
     ad_norm = ad / (np.median(ad[ad > 0]) if (ad > 0).any() else 1)
     mkt_mult = 1 + 0.10 * np.log1p(ad_norm) + 0.06 * m.promo_active.values
 
-    freeze_sev = np.clip(-6 - tmin, 0, None)  # degrees below -6
+    freeze_sev = np.clip(-6 - tmin, 0, None)  
     prev_cold = np.roll(tmin, 1) <= -8
     thaw = (prev_cold & (tmin > -2)).astype(float)
     thaw[0] = 0
@@ -255,7 +255,7 @@ for _, b in branches.iterrows():
         lam = base * ann * dow * hol_mult * event * level * mkt
         lam = np.where(open_mask, lam, 0)
 
-        k = 6.0  # negative binomial dispersion
+        k = 6.0  
         p = k / (k + lam + 1e-9)
         calls = rng.negative_binomial(k, p)
         calls = np.where(open_mask, calls, 0)
@@ -268,7 +268,7 @@ for _, b in branches.iterrows():
 
 demand = pd.concat(rows, ignore_index=True)
 
-# --- capacity: technicians per day, completed jobs and backlog
+
 cap_rows = []
 for _, b in branches.iterrows():
     techs = np.full(N, b.technicians_fte, dtype=float)
@@ -280,13 +280,13 @@ for _, b in branches.iterrows():
     techs = techs * np.where(dates.weekday == 5, 0.55, np.where(dates.weekday == 6, 0.35, 1.0))
     techs = techs * np.where(cal.is_holiday.values == 1, 0.35, 1.0)
     techs = techs * np.where(cal.is_christmas_week.values == 1, 0.8, 1.0)
-    techs = np.maximum(0, np.round(techs - rng.binomial(2, 0.15, N)))  # sick days
+    techs = np.maximum(0, np.round(techs - rng.binomial(2, 0.15, N)))  
     techs = np.where(dates >= b.open_date, techs, 0)
     cap_rows.append(pd.DataFrame({"date": dates, "branch_id": b.branch_id, "technicians_on_shift": techs.astype(int)}))
 cap = pd.concat(cap_rows, ignore_index=True)
 demand = demand.merge(cap, on=["date", "branch_id"])
 
-# allocate capacity: each tech ~7.5 hrs; emergencies served first
+
 demand["_hours_needed"] = demand.calls_received * demand._dur
 tot = demand.groupby(["date", "branch_id"])["_hours_needed"].transform("sum")
 avail_h = demand.technicians_on_shift * 7.5
@@ -307,17 +307,17 @@ demand["avg_ticket_usd"] = (demand._ticket * demand.date.map(pi) *
 demand.loc[demand.jobs_completed == 0, "avg_ticket_usd"] = np.nan
 demand["revenue_usd"] = (demand.jobs_completed * demand.avg_ticket_usd).fillna(0).round(2)
 
-# --- data-quality quirks: 3-day CRM outage at BR04 (calls not recorded)
+
 outage = (demand.branch_id == "BR04") & demand.date.between("2025-03-10", "2025-03-12")
 demand.loc[outage, ["calls_received", "emergency_calls"]] = np.nan
 
 demand = demand.drop(columns=[c for c in demand.columns if c.startswith("_")])
-demand = demand[demand.date >= demand.branch_id.map(branches.set_index("branch_id").open_date)]  # drop pre-open rows
+demand = demand[demand.date >= demand.branch_id.map(branches.set_index("branch_id").open_date)]  
 demand = demand[["date", "branch_id", "service_type", "service_category", "calls_received",
                  "emergency_calls", "jobs_completed", "jobs_deferred", "cancellations",
                  "technicians_on_shift", "avg_ticket_usd", "revenue_usd"]]
 
-# ------------------------------------------------------------------ job-level table
+
 svc_idx = services.set_index("service_type")
 jb = demand[demand.jobs_completed > 0][["date", "branch_id", "service_type", "jobs_completed", "avg_ticket_usd"]]
 rep = jb.loc[jb.index.repeat(jb.jobs_completed)].reset_index(drop=True)
@@ -329,7 +329,7 @@ hours = np.where(rep.is_emergency == 1,
                  rng.choice(np.arange(24), n, p=np.r_[np.full(6, .015), np.full(6, .05), np.full(6, .06), np.full(6, .041)] / 1.0 / np.r_[np.full(6, .015), np.full(6, .05), np.full(6, .06), np.full(6, .041)].sum()),
                  rng.choice(np.arange(8, 18), n))
 rep["request_ts"] = rep.date + pd.to_timedelta(hours, "h") + pd.to_timedelta(rng.integers(0, 60, n), "m")
-lead = np.where(rep.is_emergency == 1, rng.gamma(2, 1.2, n), rng.gamma(2, 14, n))  # hours
+lead = np.where(rep.is_emergency == 1, rng.gamma(2, 1.2, n), rng.gamma(2, 14, n))  
 rep["response_hours"] = lead.round(2)
 dur = rep.service_type.map(svc_idx.avg_duration_h).values
 rep["duration_hours"] = np.clip(rng.lognormal(np.log(dur), 0.35), 0.25, None).round(2)
@@ -344,7 +344,7 @@ jobs = rep[["job_id", "branch_id", "date", "request_ts", "service_type", "is_eme
             "booking_channel", "repeat_customer", "technician_id", "response_hours", "duration_hours",
             "invoice_usd", "customer_rating"]].rename(columns={"date": "job_date"})
 
-# ------------------------------------------------------------------ write
+
 branches_out = branches.drop(columns=["base_daily_calls", "winter_temp_c", "summer_temp_c", "rain_factor", "annual_growth"])
 branches_out.to_csv(OUT / "branches.csv", index=False)
 weather.to_csv(OUT / "weather_daily.csv", index=False)
