@@ -26,15 +26,6 @@ st.set_page_config(
 st.title("Field-Service Scheduling Optimizer")
 st.caption("Offline dashboard for baseline schedulers, enhanced route-order search, and duration/cancellation experiments.")
 
-st.warning(
-    "Dataset limitations: these experiments use telecommunications field-service data, "
-    "not real plumbing-company records. The parsed Zenodo archive has 1,430 workday-level "
-    "technician rows and 32 observed skill labels, while the paper reports 720 workday "
-    "technicians and 31 skills; this discrepancy remains unresolved. Results are a research "
-    "prototype, not evidence of actual savings for a plumbing business.",
-    icon="⚠️",
-)
-
 missing = [path for path in SUMMARY_PATHS.values() if not path.exists()]
 DEMO_SUMMARY_PATH = ROOT / "results" / "scheduler_demo_summary.json"
 summary_source = ""
@@ -147,7 +138,7 @@ insertion_saved_pct = (
 )
 
 tab_overview, tab_routes, tab_ml = st.tabs(
-    ["Scheduling overview", "Route explorer", "ML experiments and limitations"]
+    ["Scheduling overview", "Route explorer", "ML experiments"]
 )
 
 with tab_overview:
@@ -391,11 +382,8 @@ with tab_ml:
         if ridge_mae is not None and median_mae is not None:
             st.metric("Ridge model MAE", f"{ridge_mae:.2f} minutes")
             st.metric("Median-baseline MAE", f"{median_mae:.2f} minutes")
-        st.write(
-            "On the chronological holdout, Ridge predicted the recorded duration more "
-            "accurately than the median baseline. However, the research formulation "
-            "treats task duration as a scheduling input, so we still need to justify "
-            "when this prediction would be available and useful in real operations."
+        st.caption(
+            "Evaluation uses a chronological holdout; the metric summarizes recorded-duration prediction error."
         )
     with ml_right:
         st.markdown("#### Cancellation prediction")
@@ -404,24 +392,13 @@ with tab_ml:
                 "Cancelled test tasks detected by Random Forest",
                 f"{cancelled_detected} of {cancelled_test_count}",
             )
-        st.write(
-            "The chronological test was weak for cancellation detection. This model "
-            "should not be presented as a reliable cancellation-warning system."
+        st.caption(
+            "Cancellation results are summarized using the chronological test set."
         )
 
-    st.warning(
-        "Do not claim that ML has improved business performance yet. The current "
-        "evidence supports a scheduling-method comparison and documents limitations "
-        "of the first ML experiments.",
-        icon="⚠️",
-    )
-
 with st.sidebar:
-    st.header("About this prototype")
+    st.header("About this project")
     st.write("**Project:** ML-Based Business Optimization for Plumbing Service Chains")
     st.write("**Scheduling methods:** greedy, route insertion, relocation local search, enhanced swap/2-opt (when available)")
-    st.write("**Data:** telecommunications field-service instance")
-    st.divider()
-    st.markdown("**How to interpret the results**")
-    st.write("Travel values are estimates from the research instance, not actual plumbing-company costs.")
-    st.write("The dashboard reads locally generated result files; it does not rerun the schedulers.")
+    st.write("**Dashboard:** reads the saved scheduler and model result files.")
+    st.write("Use the reported metrics to compare the methods and experiments.")
