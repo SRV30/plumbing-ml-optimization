@@ -3,7 +3,7 @@
     "purpose": "Aggregate demonstration fallback for the dashboard when local scheduler output files are absent.",
     "data_source": "TDC Net telecommunications technician routing and scheduling instance",
     "source_record": "https://zenodo.org/records/7904015",
-    "provenance": "Values transcribed from the project's previously validated local scheduler summaries and terminal comparison.",
+    "provenance": "Values transcribed from the project's previously validated local scheduler summaries and terminal comparison. Enhanced local-search figures were confirmed by the user's local scheduler comparison and independent validator output on 26 October 2026.",
     "not_for_recomputation": "This file does not contain tasks, technician data, travel matrices, route rows, or sufficient information to rerun a scheduler.",
     "limitations": [
       "Not real plumbing-company data.",
@@ -53,6 +53,25 @@
       "travel_reduction_percent": 2.65,
       "accepted_relocation_moves": 100,
       "max_accepted_moves": 100
+    },
+    "Enhanced local search": {
+      "baseline": "relocation_local_search_plus_route_order_swap_2opt",
+      "note": "Bounded route-order heuristic; only feasible travel-reducing moves accepted. User-run independent validation passed 28,261 checks with zero errors.",
+      "total_task_records": 2677,
+      "cancelled_excluded": 444,
+      "active_tasks": 2233,
+      "assigned_tasks": 2209,
+      "unassigned_tasks": 24,
+      "technician_routes_used": 637,
+      "active_task_coverage": 0.989252,
+      "total_travel_minutes_including_depot_returns": 14174,
+      "total_service_minutes": 140707,
+      "initial_local_search_travel_minutes": 14239,
+      "travel_reduction_minutes": 65,
+      "travel_reduction_percent": 0.4564,
+      "assignment_set_preserved": true,
+      "validation_checks": 28261,
+      "validation_errors": 0
     }
   }
 }
