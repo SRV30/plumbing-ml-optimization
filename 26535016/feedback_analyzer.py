@@ -7,7 +7,7 @@ from typing import Dict, Iterable, List
 
 import joblib
 
-# Text cleaning (shared by training and prediction - must stay identical!)
+
 _URL = re.compile(r"https?://\S+")
 _WS = re.compile(r"\s+")
 
@@ -150,7 +150,7 @@ class FeedbackAnalyzer:
         self.meta = bundle.get("meta", {})
         self.model_version = self.meta.get("trained_at", "unknown")
 
-    # public
+    
     def analyze(self, text: str) -> dict:
         """Analyse ONE review."""
         return self.analyze_many([text])[0]
@@ -220,7 +220,7 @@ class FeedbackAnalyzer:
             )
         return out
 
-    # helpers
+    
     @staticmethod
     def _validate(text) -> str:
         if not isinstance(text, str):
@@ -228,7 +228,7 @@ class FeedbackAnalyzer:
         text = text.strip()
         if len(text) < 3:
             raise ValueError("Please enter a longer review.")
-        return text[:2000]  # guard against huge inputs
+        return text[:2000]  
 
     @staticmethod
     def _priority(sentiment: str, has_complaint: bool, severity: str | None) -> str:
