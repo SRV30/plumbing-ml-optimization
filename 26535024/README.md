@@ -576,7 +576,7 @@ The final evaluation depends on the validated data and selected research questio
 
 ## Academic deliverables
 
-The course submission requires a project report, presentation, code, openly available data-source links and a help file. The reproduction/help guide is available at `report/help.md`; the report remains a draft until the team details, institution/course metadata, final page references, and required exports are completed. The report should include each member's contribution and relevant page numbers on its first page, explain every result visualization and end with evidence-based recommendations. Code and code screenshots should be kept out of the report.
+The course submission requires a project report, presentation, code, openly available data-source links and a help file. The reproduction/help guide is available at `report/help.md`, and the slide-by-slide presentation content is drafted in `report/presentation_slides.md`. The report and slides remain drafts until the team details, institution/course metadata, final page references, and required presentation/report exports are completed. The report should include each member's contribution and relevant page numbers on its first page, explain every result visualization and end with evidence-based recommendations. Code and code screenshots should be kept out of the report.
 
 ## Research source
 
