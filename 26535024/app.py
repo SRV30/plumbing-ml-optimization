@@ -38,13 +38,13 @@ try:
         }
         if ENHANCED_SUMMARY_PATH.exists():
             enhanced_summary = json.loads(ENHANCED_SUMMARY_PATH.read_text(encoding="utf-8"))
-            # Accept older local summary files created before the dashboard schema was unified.
+            
             enhanced_summary.setdefault(
                 "total_travel_minutes_including_depot_returns",
                 enhanced_summary.get("final_travel_minutes_including_depot_returns"),
             )
-            # Older summaries may omit service time. Recover it from the enhanced
-            # route file rather than rendering a misleading "None" in the table.
+            
+            
             if enhanced_summary.get("total_service_minutes") is None:
                 enhanced_routes_path = DATA / "enhanced_local_search_routes.csv"
                 if enhanced_routes_path.exists():
