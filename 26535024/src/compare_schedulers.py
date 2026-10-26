@@ -34,6 +34,61 @@ ENHANCED_SUMMARY = DATA / "enhanced_local_search_summary.json"
 CSV_OUTPUT = DATA / "scheduler_comparison.csv"
 
 
+def _normalise_summary(label: str, summary: dict) -> dict:
+    """Accept both legacy experiment summaries and the dashboard's unified schema."""
+    aliases = {
+        "total_travel_minutes_including_depot_returns": (
+            "total_travel_minutes_including_depot_returns",
+            "final_travel_minutes_including_depot_returns",
+            "total_travel_minutes",
+            "travel_minutes",
+            "total_travel_time_minutes",
+            "total_travel_time",
+        ),
+        "total_service_minutes": (
+            "total_service_minutes",
+            "service_minutes",
+            "total_duration_minutes",
+        ),
+        "technician_routes_used": (
+            "technician_routes_used",
+            "routes_used",
+            "technician_day_routes",
+            "number_of_routes",
+        ),
+        "active_task_coverage": (
+            "active_task_coverage",
+            "coverage",
+            "task_coverage",
+        ),
+        "assigned_tasks": ("assigned_tasks", "tasks_assigned", "assigned"),
+        "unassigned_tasks": ("unassigned_tasks", "tasks_unassigned", "unassigned"),
+    }
+    result = dict(summary)
+    for canonical, candidates in aliases.items():
+        if result.get(canonical) is None:
+            for candidate in candidates:
+                if result.get(candidate) is not None:
+                    result[canonical] = result[candidate]
+                    break
+    required = (
+        "total_travel_minutes_including_depot_returns",
+        "technician_routes_used",
+        "active_task_coverage",
+        "assigned_tasks",
+        "unassigned_tasks",
+    )
+    missing = [key for key in required if result.get(key) is None]
+    if missing:
+        available = ", ".join(sorted(summary.keys()))
+        raise ValueError(
+            f"{label} summary cannot be normalised; missing {missing}. "
+            f"Available keys: {available}"
+        )
+    result.setdefault("total_service_minutes", None)
+    return result
+
+
 def main() -> None:
     missing = [path for path in SUMMARY_FILES.values() if not path.exists()]
     if missing:
@@ -45,10 +100,14 @@ def main() -> None:
 
     summaries: dict[str, dict] = {}
     for label, path in SUMMARY_FILES.items():
-        summaries[label] = json.loads(path.read_text(encoding="utf-8"))
+        raw_summary = json.loads(path.read_text(encoding="utf-8"))
+        summaries[label] = _normalise_summary(label, raw_summary)
 
     if ENHANCED_SUMMARY.exists():
-        enhanced = json.loads(ENHANCED_SUMMARY.read_text(encoding="utf-8"))
+        enhanced = _normalise_summary(
+            "Enhanced local search",
+            json.loads(ENHANCED_SUMMARY.read_text(encoding="utf-8")),
+        )
         # Older enhanced summaries can omit service time; derive it from the route CSV.
         if enhanced.get("total_service_minutes") is None:
             enhanced_routes_path = DATA / "enhanced_local_search_routes.csv"
@@ -82,18 +141,22 @@ def main() -> None:
         row: dict[str, object] = {"metric": label, "unit": unit}
         values = {}
         for method_name, column_name in method_columns.items():
-            value = float(summaries[method_name][key])
+            raw_value = summaries[method_name].get(key)
+            value = float(raw_value) if raw_value is not None else None
             row[column_name] = value
-            values[method_name] = value
+            if value is not None:
+                values[method_name] = value
         row["local_search_minus_greedy"] = (
             values["Local search"] - values["Greedy append-only"]
+            if "Local search" in values and "Greedy append-only" in values else ""
         )
-        if "Enhanced local search" in values:
+        if "Enhanced local search" in method_columns:
             row["enhanced_local_search_minus_greedy"] = (
                 values["Enhanced local search"] - values["Greedy append-only"]
+                if "Enhanced local search" in values and "Greedy append-only" in values else ""
             )
-        if key == "total_travel_minutes_including_depot_returns":
-            greedy_value = values["Greedy append-only"]
+        if key == "total_travel_minutes_including_depot_returns" and values:
+            greedy_value = values.get("Greedy append-only", 0.0)
             best_method = min(values, key=values.get)
             row["travel_reduction_percent_vs_greedy"] = (
                 (greedy_value - values[best_method]) / greedy_value * 100
