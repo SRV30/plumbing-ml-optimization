@@ -1,0 +1,202 @@
+{
+  "features": [
+    "branch_id",
+    "service_type",
+    "climate_zone",
+    "households_k",
+    "avg_housing_age_yrs",
+    "days_since_open",
+    "dow",
+    "month",
+    "doy_sin",
+    "doy_cos",
+    "is_holiday",
+    "is_brown_friday",
+    "is_christmas_week",
+    "is_school_holiday",
+    "temp_min_c",
+    "temp_avg_c",
+    "precip_mm",
+    "snow_cm",
+    "freeze_severity",
+    "thaw_day",
+    "rain_3d",
+    "marketing_spend_usd",
+    "promo_active",
+    "mkt_adstock",
+    "lag_28",
+    "lag_35",
+    "lag_42",
+    "lag_364",
+    "baseline",
+    "roll_mean_7",
+    "roll_mean_28",
+    "roll_std_28",
+    "svc_freeze",
+    "svc_thaw"
+  ],
+  "cat_features": [
+    "branch_id",
+    "service_type",
+    "climate_zone"
+  ],
+  "categories": {
+    "branch_id": [
+      "BR01",
+      "BR02",
+      "BR03",
+      "BR04",
+      "BR05",
+      "BR06",
+      "BR07",
+      "BR08"
+    ],
+    "service_type": [
+      "burst_frozen_pipe",
+      "drain_cleaning",
+      "inspection_camera",
+      "leak_repair",
+      "repipe_remodel",
+      "sewer_line",
+      "sump_pump",
+      "toilet_fixture",
+      "water_heater"
+    ],
+    "climate_zone": [
+      "cold",
+      "cold-dry",
+      "desert",
+      "hot",
+      "humid",
+      "wet"
+    ]
+  },
+  "burst_service": "burst_frozen_pipe",
+  "metrics": {
+    "LightGBM (this model)": {
+      "WAPE_%": 48.08,
+      "MAE": 2.215,
+      "RMSE": 3.868,
+      "Bias_%": -1.81
+    },
+    "Naive: avg of last 4 same weekdays": {
+      "WAPE_%": 56.17,
+      "MAE": 2.588,
+      "RMSE": 5.209,
+      "Bias_%": -6.01
+    }
+  },
+  "metrics_branch_day": {
+    "LightGBM (this model)": {
+      "WAPE_%": 18.88,
+      "MAE": 7.828,
+      "RMSE": 12.015,
+      "Bias_%": -1.81
+    },
+    "Naive: avg of last 4 same weekdays": {
+      "WAPE_%": 24.91,
+      "MAE": 10.332,
+      "RMSE": 18.674,
+      "Bias_%": -6.01
+    }
+  },
+  "wape_by_branch": {
+    "BR01": 20.22,
+    "BR02": 17.56,
+    "BR03": 18.26,
+    "BR04": 17.17,
+    "BR05": 20.05,
+    "BR06": 17.39,
+    "BR07": 19.66,
+    "BR08": 23.4
+  },
+  "wape_by_service": {
+    "burst_frozen_pipe": 56.83,
+    "drain_cleaning": 40.38,
+    "inspection_camera": 60.59,
+    "leak_repair": 42.92,
+    "repipe_remodel": 67.83,
+    "sewer_line": 52.37,
+    "sump_pump": 62.73,
+    "toilet_fixture": 47.93,
+    "water_heater": 47.79
+  },
+  "interval_coverage": 0.733167270531401,
+  "best_iteration": 800,
+  "feature_importance": {
+    "baseline": 43.79,
+    "roll_mean_28": 16.88,
+    "svc_freeze": 8.43,
+    "service_type": 5.67,
+    "dow": 4.92,
+    "roll_mean_7": 2.63,
+    "days_since_open": 1.76,
+    "doy_cos": 1.54,
+    "doy_sin": 1.3,
+    "lag_364": 1.27,
+    "roll_std_28": 1.18,
+    "rain_3d": 1.15,
+    "marketing_spend_usd": 1.13,
+    "is_holiday": 0.99,
+    "freeze_severity": 0.91,
+    "mkt_adstock": 0.9,
+    "temp_avg_c": 0.9,
+    "temp_min_c": 0.83,
+    "lag_42": 0.59,
+    "precip_mm": 0.58,
+    "lag_28": 0.55,
+    "lag_35": 0.5,
+    "month": 0.38,
+    "branch_id": 0.38,
+    "households_k": 0.3,
+    "thaw_day": 0.15,
+    "is_brown_friday": 0.09,
+    "promo_active": 0.09,
+    "avg_housing_age_yrs": 0.07,
+    "is_christmas_week": 0.06,
+    "climate_zone": 0.04,
+    "is_school_holiday": 0.02,
+    "snow_cm": 0.02,
+    "svc_thaw": 0.0
+  },
+  "service_stats": {
+    "burst_frozen_pipe": {
+      "avg_duration_h": 2.56,
+      "avg_invoice_usd": 1069.16
+    },
+    "drain_cleaning": {
+      "avg_duration_h": 1.38,
+      "avg_invoice_usd": 315.84
+    },
+    "inspection_camera": {
+      "avg_duration_h": 1.06,
+      "avg_invoice_usd": 248.63
+    },
+    "leak_repair": {
+      "avg_duration_h": 1.7,
+      "avg_invoice_usd": 420.98
+    },
+    "repipe_remodel": {
+      "avg_duration_h": 8.51,
+      "avg_invoice_usd": 5774.05
+    },
+    "sewer_line": {
+      "avg_duration_h": 4.79,
+      "avg_invoice_usd": 3038.55
+    },
+    "sump_pump": {
+      "avg_duration_h": 2.34,
+      "avg_invoice_usd": 1191.1
+    },
+    "toilet_fixture": {
+      "avg_duration_h": 1.28,
+      "avg_invoice_usd": 334.19
+    },
+    "water_heater": {
+      "avg_duration_h": 3.72,
+      "avg_invoice_usd": 1775.97
+    }
+  },
+  "val_start": "2025-07-01",
+  "history_end": "2025-12-31"
+}

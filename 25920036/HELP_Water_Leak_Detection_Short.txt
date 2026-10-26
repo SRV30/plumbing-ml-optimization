@@ -1,0 +1,28 @@
+HELP FILE: MACHINE LEARNING-BASED WATER LEAK DETECTION
+
+Purpose
+This Google Colab project uses accelerometer signals and a Random Forest model to classify signal windows as No Leak (label 0) or Orifice Leak (label 1).
+
+Requirements
+- Google Colab and the project notebook (.ipynb)
+- Input CSV: combined_leak_dataset.csv
+- Python libraries: pandas, NumPy, Matplotlib, and scikit-learn
+
+How to Run
+1. Open the notebook in Google Colab.
+2. Upload combined_leak_dataset.csv or mount Google Drive.
+3. Confirm the file path in the data-loading cell.
+4. Run all cells from top to bottom.
+5. Review the printed metrics, plots, and saved output files.
+
+Model Workflow
+The code divides the signal into non-overlapping windows of 25,600 samples, extracts signal features, trains a Random Forest classifier, and evaluates it using a train/validation/test split and cross-validation.
+
+Main Outputs
+The notebook can save feature tables, descriptive statistics, model metrics, a confusion matrix, an ROC curve, and a feature-importance plot under /content/leak_analysis_outputs.
+
+Troubleshooting
+If a file is not found, check its filename and path. If a variable is undefined, rerun notebook cells in order. Download important outputs or save them to Google Drive before the Colab session ends.
+
+Limitation
+The current 70 windows come from only two original recordings, one per class. The reported perfect scores are exploratory and do not prove performance on unseen recordings. More independent recordings and recording-level testing are required before real-world use.

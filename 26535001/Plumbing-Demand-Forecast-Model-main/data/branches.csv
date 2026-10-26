@@ -1,0 +1,9 @@
+branch_id,city,state,climate_zone,open_date,households_k,technicians_fte,avg_housing_age_yrs
+BR01,Minneapolis,MN,cold,2015-04-01,410,11,38
+BR02,Chicago,IL,cold,2012-06-15,620,15,26
+BR03,Denver,CO,cold-dry,2017-03-01,350,9,49
+BR04,Atlanta,GA,humid,2014-09-10,480,12,36
+BR05,Dallas,TX,hot,2013-02-20,560,14,38
+BR06,Phoenix,AZ,desert,2016-11-05,390,10,34
+BR07,Seattle,WA,wet,2018-05-12,330,8,28
+BR08,Charlotte,NC,humid,2024-07-01,260,7,52

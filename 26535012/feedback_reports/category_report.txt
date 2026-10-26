@@ -1,0 +1,15 @@
+                         precision    recall  f1-score   support
+
+   late_arrival_no_show      0.943     0.920     0.931       288
+                   none      1.000     0.999     0.999      1441
+     poor_communication      0.946     0.914     0.930       116
+        pricing_billing      0.884     0.932     0.907       221
+   property_damage_mess      0.920     0.807     0.860        57
+       repair_not_fixed      0.878     0.921     0.899       203
+scheduling_cancellation      0.971     0.943     0.957        70
+    technician_behavior      0.889     0.875     0.882        64
+              upselling      0.960     0.970     0.965       100
+
+               accuracy                          0.964      2560
+              macro avg      0.932     0.920     0.926      2560
+           weighted avg      0.965     0.964     0.964      2560

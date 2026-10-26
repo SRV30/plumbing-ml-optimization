@@ -1,0 +1,23 @@
+{
+  "trained_at": "2026-10-25 11:41",
+  "sklearn_version": "1.6.1",
+  "n_rows": 12800,
+  "refit_on_all_data": true,
+  "metrics": {
+    "sentiment": {
+      "macro_f1": 0.8283,
+      "accuracy": 0.9082,
+      "n_test": 2560
+    },
+    "category": {
+      "macro_f1": 0.9256,
+      "accuracy": 0.9641,
+      "n_test": 2560
+    },
+    "severity": {
+      "macro_f1": 0.7277,
+      "accuracy": 0.7274,
+      "n_test": 1119
+    }
+  }
+}

@@ -1,0 +1,2 @@
+timestamp,review_text,sentiment,category,severity,priority
+2026-10-25T11:45:37,Technician never showed up for my appointment and nobody called me back. Avoid.,negative,late_arrival_no_show,medium,follow_up

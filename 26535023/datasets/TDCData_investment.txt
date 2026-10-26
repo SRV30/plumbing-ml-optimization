@@ -1,0 +1,33 @@
+Skill investment: true
+Skill investment cost: 175
+Number skill investment groups: 10
+Skill investment group: 1: Set(["2MBIT", "ISDN2.S", "DSLAMFIBE", "ISDN2.I"])
+Skill investment group: 2: Set(["COAX.I", "XAUTO", "T-MFB", "KABEL.O", "TVTS", "COAX.K"])
+Skill investment group: 3: Set(["ADSL.S", "TVOIP.S"])
+Skill investment group: 4: Set(["TOTAL"])
+Skill investment group: 5: Set(["ADSL.I", "KABEL.S", "TVOIP.I"])
+Skill investment group: 6: Set(["X-FELT", "COAX.S"])
+Skill investment group: 7: Set(["COAX.O", "MOBIL", "DSB", "SHDSL"])
+Skill investment group: 8: Set(["PSTN.I", "COAX.E", "ALARM", "64K/APL", "COAX.P"])
+Skill investment group: 9: Set(["TREFO.I", "STIKL.I"])
+Skill investment group: 10: Set(["COAX.H", "KABEL.U", "PSTN.S"]), 9 => Set(["TREFO.I", "STIKL.I"])
+Tech investment: true
+Tech investment cost: 1200
+Overtime investment: true
+Overtime investment cost: 450
+Overtime investment minutes: 120
+Digitalize Investment: true
+Digitalize skill: ["ADSL.I"]
+Digitalize cost: 500
+Digitalize skill: ["ADSL.S"]
+Digitalize cost: 500
+Digitalize skill: ["ISDN2.I"]
+Digitalize cost: 500
+Digitalize skill: ["ISDN2.S"]
+Digitalize cost: 500
+Digitalize skill: ["PSTN.I"]
+Digitalize cost: 500
+Digitalize skill: ["PSTN.S"]
+Digitalize cost: 500
+Digitalize skill: ["SHDSL"]
+Digitalize cost: 500
