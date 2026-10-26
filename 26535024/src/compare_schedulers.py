@@ -108,7 +108,7 @@ def main() -> None:
             "Enhanced local search",
             json.loads(ENHANCED_SUMMARY.read_text(encoding="utf-8")),
         )
-        # Older enhanced summaries can omit service time; derive it from the route CSV.
+        
         if enhanced.get("total_service_minutes") is None:
             enhanced_routes_path = DATA / "enhanced_local_search_routes.csv"
             if enhanced_routes_path.exists():
@@ -182,7 +182,7 @@ def main() -> None:
     }
     short_labels = [short_label_map[label] for label in labels]
 
-    # Separate figures make each comparison readable in the final report.
+    
     travel_values = [
         float(summaries[label]["total_travel_minutes_including_depot_returns"])
         for label in labels
