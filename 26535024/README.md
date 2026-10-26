@@ -56,7 +56,7 @@ plumbing-ml-optimization/
 ├── results/
 │   ├── *.json and *.csv           # Tracked ML metrics/predictions and analysis outputs
 │   └── figures/                   # Tracked result plots
-├── report/                        # Final report/presentation/help file to be added
+├── report/                        # Final report, help guide, and course deliverables
 ├── src/
 │   ├── parse_tdc_records.py
 │   ├── build_travel_matrices.py
@@ -576,7 +576,7 @@ The final evaluation depends on the validated data and selected research questio
 
 ## Academic deliverables
 
-The course submission requires a project report, presentation, code, openly available data-source links and a help file. The report should include each member's contribution and relevant page numbers on its first page, explain every result visualization and end with evidence-based recommendations. Code and code screenshots should be kept out of the report.
+The course submission requires a project report, presentation, code, openly available data-source links and a help file. The reproduction/help guide is available at `report/help.md`; the report remains a draft until the team details, institution/course metadata, final page references, and required exports are completed. The report should include each member's contribution and relevant page numbers on its first page, explain every result visualization and end with evidence-based recommendations. Code and code screenshots should be kept out of the report.
 
 ## Research source
 
@@ -585,12 +585,12 @@ Dataset and results: https://zenodo.org/records/7904015
 
 ## Team
 
-Group 5 — add all five members' names and enrollment numbers here once confirmed.
+Group 5 — add all five members' names and enrollment numbers here once confirmed. The report and help guide intentionally leave these personal/course-specific fields as placeholders rather than inventing them.
 
 
 ## Interactive dashboard
 
-The Streamlit dashboard presents the three scheduling methods, plots, an optional local-search route explorer, and the current ML limitations. It prefers local scheduler summaries under `data/processed/`. If these generated files are absent (for example, in a fresh Git clone), the app uses `results/scheduler_demo_summary.json` for a clearly labelled aggregate overview. That fallback does not include individual routes or tasks, so the Route Explorer needs the locally generated schedule CSVs.
+The Streamlit dashboard presents the three baseline scheduling methods and, when available, the enhanced route-order result, alongside plots, a local route explorer, and the current ML limitations. It prefers local scheduler summaries under `data/processed/`. If these generated files are absent (for example, in a fresh Git clone), the app uses `results/scheduler_demo_summary.json` for a clearly labelled aggregate overview. That fallback does not include individual routes or tasks, so the Route Explorer needs the locally generated schedule CSVs.
 
 The ML panel reads the tracked chronological metrics in `results/duration_temporal_metrics.json` and `results/cancellation_temporal_metrics.json`, rather than hard-coding those values in the app. The dashboard never launches a scheduler automatically.
 
@@ -632,7 +632,7 @@ python -m py_compile src/improve_local_search_moves.py
 python src/improve_local_search_moves.py
 ```
 
-Outputs are written to `data/processed/enhanced_local_search_*`. These files are local/Git-ignored. The enhanced heuristic has not been run against the local dataset in this commit, so no performance improvement is claimed until the generated summary is inspected and independently validated.
+Outputs are written to `data/processed/enhanced_local_search_*`. These files are local/Git-ignored. The enhanced heuristic has now been run locally and independently validated. The recorded result is 14,174 travel minutes, 2,209 assigned tasks, 637 routes, and 65 minutes (0.46%) less travel than the 14,239-minute relocation-local-search starting schedule. The validator reported 28,261 checks and zero errors. These results validate internal feasibility rules, not global optimality.
 
 
 ## Quantile-duration scheduling impact experiment
