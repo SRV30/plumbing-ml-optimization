@@ -112,7 +112,7 @@ def main() -> None:
     tasks = pd.read_csv(TASKS_PATH)
     technicians = pd.read_csv(TECHNICIANS_PATH)
 
-    # Memory-map arrays so Python can access the matrices without copying them.
+    
     task_to_task = np.load(TASK_TO_TASK_PATH, mmap_mode="r")
     task_to_technician = np.load(TASK_TO_TECH_PATH, mmap_mode="r")
     technician_to_task = np.load(TECH_TO_TASK_PATH, mmap_mode="r")
@@ -220,9 +220,9 @@ def main() -> None:
                 "penalty": task["penalty"],
             }
 
-    # Keep business priorities (lower numeric priority first), then high
-    # non-service penalties, then earliest task-window end. This is a declared
-    # heuristic ordering, not a claim that the order is globally optimal.
+    
+    
+    
     active_tasks = [
         task for task in task_records
         if not task["cancelled"] and task["candidates"]
@@ -264,8 +264,8 @@ def main() -> None:
             service_start = max(task["start"], arrival)
             service_finish = service_start + pd.Timedelta(minutes=task["duration"])
 
-            # Require the service to fit in the task window and technician shift,
-            # and require a return to the technician's depot within that shift.
+            
+            
             if service_finish > task["end"]:
                 continue
             if service_finish > state["end"]:
@@ -279,12 +279,12 @@ def main() -> None:
                 previous_return = float(
                     task_to_technician[last_task_id - 1, technician_id - 1]
                 )
-                # Extending the route replaces the previous end-of-route return
-                # with the previous-task-to-new-task leg and the new return leg.
+                
+                
                 travel_delta = incoming + return_travel - previous_return
 
-            # Greedy objective: smallest marginal route travel, with deterministic
-            # tie-breaks favouring lower workload and earlier finish time.
+            
+            
             score = (
                 travel_delta,
                 state["service_minutes"],
@@ -346,7 +346,7 @@ def main() -> None:
             "penalty": task["penalty"],
         }
 
-    # Add the return leg for each route's final task and prepare route output.
+    
     route_rows: list[dict[str, Any]] = []
     total_travel_minutes = 0.0
     route_count = 0
