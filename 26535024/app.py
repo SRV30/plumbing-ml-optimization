@@ -46,9 +46,14 @@ try:
             for label, path in SUMMARY_PATHS.items()
         }
         if ENHANCED_SUMMARY_PATH.exists():
-            summaries["Enhanced local search"] = json.loads(
-                ENHANCED_SUMMARY_PATH.read_text(encoding="utf-8")
+            enhanced_summary = json.loads(ENHANCED_SUMMARY_PATH.read_text(encoding="utf-8"))
+            # Accept older local summary files created before the dashboard schema was unified.
+            enhanced_summary.setdefault(
+                "total_travel_minutes_including_depot_returns",
+                enhanced_summary.get("final_travel_minutes_including_depot_returns"),
             )
+            enhanced_summary.setdefault("total_service_minutes", None)
+            summaries["Enhanced local search"] = enhanced_summary
         summary_source = "local generated scheduler summaries"
     else:
         if not DEMO_SUMMARY_PATH.exists():
@@ -165,7 +170,7 @@ with tab_overview:
         "separately. Scheduling methods are heuristics, not guaranteed optimal solutions."
     )
 
-    st.subheader("Compare all three methods")
+    st.subheader("Compare available scheduling methods")
     st.dataframe(
         comparison,
         hide_index=True,
@@ -188,6 +193,7 @@ with tab_overview:
         st.bar_chart(coverage_chart)
 
     st.markdown("#### Saved comparison plots")
+    st.caption("The saved PNG plots compare the three baseline schedulers; the table and interactive charts include the enhanced result when available.")
     plot_columns = st.columns(3)
     plots = [
         ("travel_time_comparison.png", "Travel time"),
@@ -200,7 +206,7 @@ with tab_overview:
             if image_path.exists():
                 st.image(str(image_path), caption=label, use_container_width=True)
             else:
-                st.info(f"{filename} not found. Run python src/compare_schedulers.py to regenerate it.")
+                st.info(f"{filename} not found. Run python src/compare_schedulers.py to regenerate the baseline comparison plot.")
 
     st.download_button(
         "Download comparison table (CSV)",
