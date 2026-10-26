@@ -112,7 +112,10 @@ for label in method_order:
             "Tasks unassigned": unassigned,
             "Routes used": int(item["technician_routes_used"]),
             "Travel (min)": float(item[travel_key]),
-            "Service (min)": int(item.get("total_service_minutes", 0)),
+            "Service (min)": (
+                int(item["total_service_minutes"])
+                if item.get("total_service_minutes") is not None else None
+            ),
         }
     )
 
