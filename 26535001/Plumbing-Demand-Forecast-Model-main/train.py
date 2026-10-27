@@ -8,7 +8,7 @@ import pandas as pd
 from features import full_history_features, FEATURES, CAT_FEATURES, TARGET, DATA
 
 MODELS = Path(__file__).parent / "models"
-MODELS.mkdir(exist_ok=True)
+MODELS.mkdir(parents=True, exist_ok=True)
 VAL_START = pd.Timestamp("2025-07-01")
 FIRST_USABLE = pd.Timestamp("2023-02-19")
 
@@ -21,12 +21,18 @@ def metrics(actual, predicted):
     actual, predicted = np.asarray(actual, float), np.asarray(predicted, float)
     keep = ~np.isnan(actual) & ~np.isnan(predicted)
     actual, predicted = actual[keep], predicted[keep]
+    if actual.size == 0:
+        raise ValueError("Cannot calculate forecast metrics for an empty evaluation set.")
     error = actual - predicted
+    actual_total = float(actual.sum())
+    predicted_total = float(predicted.sum())
+    wape = 100 * float(np.abs(error).sum()) / actual_total if actual_total != 0 else float("nan")
+    bias = 100 * (predicted_total - actual_total) / actual_total if actual_total != 0 else float("nan")
     return {
-        "WAPE_%": round(100 * np.abs(error).sum() / actual.sum(), 2),
+        "WAPE_%": round(wape, 2),
         "MAE": round(float(np.mean(np.abs(error))), 3),
         "RMSE": round(float(np.sqrt(np.mean(error ** 2))), 3),
-        "Bias_%": round(100 * (predicted.sum() - actual.sum()) / actual.sum(), 2),
+        "Bias_%": round(bias, 2),
     }
 
 
@@ -53,6 +59,18 @@ def main():
     train = labelled[labelled.date < VAL_START]
     val = labelled[labelled.date >= VAL_START].copy()
     print(f"train rows {len(train):,}  validation rows {len(val):,}")
+    if train.empty:
+        raise ValueError(
+            f"No training rows found before {VAL_START.date()}; "
+            "check the source data and FIRST_USABLE date."
+        )
+    if val.empty:
+        raise ValueError(
+            f"No validation rows found on or after {VAL_START.date()}; "
+            "check the source data and validation boundary."
+        )
+    if train[TARGET].isna().any() or val[TARGET].isna().any():
+        raise ValueError("Training and validation targets must not contain missing values.")
 
     print("Training point model...")
     model = fit(train[FEATURES], train[TARGET], PARAMS, 3000, val[FEATURES], val[TARGET])
