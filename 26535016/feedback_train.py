@@ -24,9 +24,19 @@ REQUIRED = ["review_text", "sentiment", "complaint_category", "complaint_severit
 SEED = 42
 
 
-def make_classifier():
-    
-    return CalibratedClassifierCV(LinearSVC(C=0.5, class_weight="balanced"), cv=3)
+def make_classifier(labels):
+    """Create a calibrated linear model using a fold count supported by the data."""
+    counts = pd.Series(labels).value_counts()
+    if counts.empty or int(counts.min()) < 2:
+        raise ValueError(
+            "Every target class needs at least two training examples "
+            "for calibrated cross-validation."
+        )
+    folds = min(3, int(counts.min()))
+    return CalibratedClassifierCV(
+        LinearSVC(C=0.5, class_weight="balanced"),
+        cv=folds,
+    )
 
 
 def evaluate(name, model, X_test, y_test, out_dir, metrics):
@@ -34,7 +44,7 @@ def evaluate(name, model, X_test, y_test, out_dir, metrics):
     macro = f1_score(y_test, pred, average="macro")
     acc = float((pred == y_test).mean())
     metrics[name] = {"macro_f1": round(float(macro), 4), "accuracy": round(acc, 4), "n_test": int(len(y_test))}
-    report = classification_report(y_test, pred, digits=3)
+    report = classification_report(y_test, pred, digits=3, zero_division=0)
     (out_dir / f"{name}_report.txt").write_text(report)
     print(f"\n=== {name.upper()}  macro-F1={macro:.3f}  accuracy={acc:.3f} ===\n{report}")
 
@@ -56,8 +66,8 @@ def main():
     args = ap.parse_args()
 
     models_dir, reports_dir = Path(args.models_dir), Path(args.reports_dir)
-    models_dir.mkdir(exist_ok=True)
-    reports_dir.mkdir(exist_ok=True)
+    models_dir.mkdir(parents=True, exist_ok=True)
+    reports_dir.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_csv(args.data)
     missing = [c for c in REQUIRED if c not in df.columns]
@@ -75,26 +85,26 @@ def main():
     X_test = vec.transform(test["text"])
 
     metrics = {}
-    sent = make_classifier().fit(X_train, train["sentiment"])
+    sent = make_classifier(train["sentiment"]).fit(X_train, train["sentiment"])
     evaluate("sentiment", sent, X_test, test["sentiment"], reports_dir, metrics)
 
-    cat = make_classifier().fit(X_train, train["complaint_category"])
+    cat = make_classifier(train["complaint_category"]).fit(X_train, train["complaint_category"])
     evaluate("category", cat, X_test, test["complaint_category"], reports_dir, metrics)
 
     
     tr_c = train[train["complaint_category"] != "none"].dropna(subset=["complaint_severity"])
     te_c = test[test["complaint_category"] != "none"].dropna(subset=["complaint_severity"])
-    sev = make_classifier().fit(vec.transform(tr_c["text"]), tr_c["complaint_severity"])
+    sev = make_classifier(tr_c["complaint_severity"]).fit(vec.transform(tr_c["text"]), tr_c["complaint_severity"])
     evaluate("severity", sev, vec.transform(te_c["text"]), te_c["complaint_severity"], reports_dir, metrics)
 
     if not args.no_refit:
         
         print("\nRefitting final models on the full dataset ...")
         X_all = vec.fit_transform(df["text"])
-        sent = make_classifier().fit(X_all, df["sentiment"])
-        cat = make_classifier().fit(X_all, df["complaint_category"])
+        sent = make_classifier(df["sentiment"]).fit(X_all, df["sentiment"])
+        cat = make_classifier(df["complaint_category"]).fit(X_all, df["complaint_category"])
         all_c = df[df["complaint_category"] != "none"].dropna(subset=["complaint_severity"])
-        sev = make_classifier().fit(vec.transform(all_c["text"]), all_c["complaint_severity"])
+        sev = make_classifier(all_c["complaint_severity"]).fit(vec.transform(all_c["text"]), all_c["complaint_severity"])
 
     meta = {
         "trained_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
