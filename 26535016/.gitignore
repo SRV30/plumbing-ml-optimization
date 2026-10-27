@@ -1,2 +1,18 @@
-/_pycache_
-/.venv
+# Local Python environments and generated files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Local runtime data and reports
+.env
+.env.*
+feedback_log.csv
+feedback_reports/
+models/*.joblib
+
+# Editor/OS files
+.DS_Store
+Thumbs.db
+.vscode/
