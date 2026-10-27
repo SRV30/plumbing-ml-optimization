@@ -4,10 +4,11 @@ Run from the repository root:
     python src/train_cancellation_model_temporal.py
 
 Older tasks (by created timestamp) are used for training; the newest 20% form
-the test set. The 'modified' field and task ID are excluded. This evaluates
-temporal separation better than a random split, but remains exploratory because
-the dataset is one static telecom field-service instance and final-state labels
-may not describe a deployable cancellation-prediction process.
+the test set. The 'modified' field, task ID, and recorded duration are excluded.
+Duration is omitted because the dataset does not establish that it is known at
+cancellation-prediction time. This evaluates temporal separation better than a
+random split, but remains exploratory because the dataset is one static telecom
+field-service instance and final-state labels may not describe a deployable process.
 """
 
 from __future__ import annotations
@@ -90,7 +91,6 @@ def make_features(row: dict[str, Any]) -> dict[str, float]:
         raise ValueError(f"Task {task_id}: negative time-window length.")
 
     features = {
-        "duration_minutes": float(row["duration"]),
         "priority": float(row["priority"]),
         "penalty": float(row["penalty"]),
         "window_length_minutes": float(window_minutes),
